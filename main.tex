@@ -1,0 +1,206 @@
+\documentclass[12pt, a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{caption}
+
+% Formatting
+\setstretch{1.15}
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% --- TITLE PAGE ---
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    {\Large \textbf{Design and Development of a Smart Autonomous Window Cleaning Robot for Skyscrapers}}\\[1.5cm]
+    
+    A Design of Mechatronics Proposal Submitted to the Department of Electromechanical Engineering\\[1cm]
+    
+    \textbf{College of Engineering}\\
+    \textbf{Addis Ababa Science and Technology University}\\[1.5cm]
+    
+    \textbf{By}\\[0.5cm]
+    1. Gediyon Wondwoson [ID No. ETS 0581/15]\\
+    2. Ezra Simon [ID No. ETS 0524/15]\\
+    3. Jalelo Jemal [ID No. ETS 0719/15]\\
+    4. Kaleb Tesfaye [ID No. ETS 0737/15]\\
+    5. Mintesinot Esayas [ID No. ETS 0952/15]\\[1.5cm]
+    
+    \textbf{Advisor:} Mr. Molla Wudyee\\[1cm]
+    \vfill
+    November 2026\\
+    Addis Ababa, Ethiopia
+\end{titlepage}
+
+% --- ABSTRACT ---
+\section*{Abstract}
+Manual cleaning of skyscraper glass façades exposes workers to severe fall hazards and is highly dependent on weather conditions. While existing commercial window-cleaning robots can clean single panes, they often fail when encountering raised window frames (mullions) that interrupt their vacuum seals and drive tracks. This proposal will address the design and development of a smart autonomous window-cleaning robot featuring a novel dual-axis frame-crossing mechanism. The proposed system will utilize a single rigid chassis equipped with a central active-vacuum chamber for primary adhesion and locomotion, alongside four extendable outrigger arms equipped with secondary suction cups. During normal operation, the central vacuum will maintain adhesion while differential wheels drive the robot. To cross a frame, the dual-axis arms will extend to anchor onto the adjacent glass pane. The central vacuum will then temporarily disengage, allowing the main body to pull itself across the frame using the four anchor points, thereby eliminating the pendulum effect and ensuring high dynamic stability. The methodology will include requirements engineering, 3D CAD modeling, finite element analysis (FEA) for cantilever bending stress, Lagrangian dynamic modeling, and PID control tuning. A physical prototype will be built and validated on a \(1.2\text{ m} \times 2.0\text{ m}\) instrumented vertical glass rig to evaluate adhesion, path tracking, and frame-crossing success. 
+
+\textbf{Keywords:} Active suction, autonomous coverage, façade cleaning, frame crossing, mechatronics.
+
+\newpage
+
+% --- CHAPTER 1 ---
+\section{Introduction}
+
+\subsection{Background of the Study}
+Glass facades combine daylight, architectural quality, and environmental separation in contemporary high-rise buildings. However, their exterior surfaces accumulate dust and urban contaminants, necessitating periodic cleaning. The task is commonly performed by human workers suspended from ropes or platforms, which is highly dangerous and weather-dependent. 
+
+A facade-cleaning robot is not merely a domestic cleaner moved onto a vertical pane. It must generate sufficient normal adhesion without damaging the glass, maintain friction while wet, locomote despite gravity, and safely recover from faults. Curtain-wall facades contain millions and raised frames that interrupt tracks and vacuum seals. Therefore, adhesion, locomotion, perception, and frame-crossing must be treated as one coupled electromechanical problem.
+
+\subsection{Problem Statement}
+The central problem is the absence of a locally developable, systematically verified robotic platform that can clean flat high-rise glass while maintaining energy-efficient adhesion and controlled transition across raised window frames. Current rigid single-pane robots stop at mullions because their suction seals and drive tracks are interrupted. Conversely, highly articulated multi-module robots suffer from complex joint synchronization and dynamic instability (pendulum effects) during transfers. There is a critical need for a robotic architecture that maintains the mechanical simplicity of a rigid crawler while providing a highly stable, redundant anchor system to bridge physical discontinuities on the glass facade.
+
+\subsection{Objectives of the Study}
+\subsubsection{General Objective}
+The general objective of the project is to design, model, develop, and experimentally evaluate a smart autonomous window-cleaning robot featuring a dual-axis extendable outrigger mechanism for stable frame-crossing.
+
+\subsubsection{Specific Objectives}
+\begin{itemize}
+    \item To propose three conceptual designs and evaluate them using a design evaluation matrix to select the optimal solution.
+    \item To perform the mechanical design and component sizing based on force, torque, and bending stress requirement calculations.
+    \item To develop comprehensive 3D solid modeling of the system components using SolidWorks.
+    \item To perform mechanical design analysis (stress, strain, and cantilever deflection) using SolidWorks Simulation.
+    \item To formulate the mathematical dynamic model of the mechatronic system using Lagrangian mechanics.
+    \item To perform time-domain and frequency-domain system response analysis evaluating stability and controllability.
+    \item To design and tune a PID controller using optimal tuning techniques for precise path tracking and vacuum regulation.
+    \item To implement and validate the integrated mechatronic system model in MATLAB/Simulink and build a functional physical prototype.
+\end{itemize}
+
+\subsection{Scope of the Study}
+The project will include requirements engineering, CAD modeling, FEA structural analysis, control simulation, and the fabrication of a functional prototype tested on a laboratory-scale vertical glass rig. The study will strictly exclude outdoor elevated testing, curved or cracked glass, and the certification of fall-arrest anchors. 
+
+\subsection{Significance of the Study}
+The primary contribution of this project will be an integrated, testable electromechanical framework that solves the frame-crossing limitation of current facade robots. Horizontally, the dual-axis anchor mechanism could be adapted for other wall-climbing robotics in construction or inspection. Vertically, the project will deepen technical knowledge in adhesion modeling, cantilever structural dynamics, and multi-sensor state estimation, providing a reproducible baseline for future robotic maintenance systems.
+
+\newpage
+
+% --- CHAPTER 2 ---
+\section{Literature Review}
+% Note: Expand these paragraphs based on the actual papers you read. 
+
+\textbf{Ebrahim et al.} proposed a methodology for glass facade cleaning robots using active suction. Their study aimed to improve adhesion efficiency. Key findings indicated that adaptive pressure regulation reduces energy consumption. However, their design lacked a validated mechanism for crossing raised frames, which this project will address through the dual-axis outrigger system.
+
+\textbf{Vega-Heredia et al.} developed the Mantis platform, a three-module articulated robot for panel transitions. The study demonstrated that inductive sensors could detect metallic frames. While the modular design successfully crossed frames, the complex joint synchronization and risk of pendulum effects during detachment highlighted the need for more dynamically stable alternatives.
+
+\textbf{Kariyawasam et al.} introduced WiBot 1.0, utilizing prismatic and revolute joints for reconfigurable window frame crossing. Their findings confirmed that linear extension mechanisms combined with end suction cups are highly effective for crossing obstacles. However, their reliance on complex articulated chains limits structural rigidity, prompting this proposal to investigate a rigid single-body solution.
+
+\textbf{Seo et al.} surveyed climbing mechanisms and cleaning methods for glass facades. Their synthesis of existing technologies concluded that while continuous locomotion robots are highly efficient, obstacle overcoming remains a persistent challenge. This study validates the necessity of a dedicated mechanical bridging mechanism for rigid-body robots.
+
+\textbf{Parween et al.} modeled the Mantis-mini, focusing on suction modeling and structural analysis. Their findings emphasized that seal leakage significantly impacts normal force. However, their structural analysis focused on standard operation rather than the extreme cantilever stresses present during frame-crossing, which this proposal will investigate.
+
+\textbf{Muthugala et al.} proposed an adhesion-aware system by monitoring impeller motor current. The study found that current draw can indicate an imminent loss of adhesion. This finding will be integrated into the proposed robot's safety state machine to detect end-cup vacuum failure during the crossing transfer.
+
+\newpage
+
+% --- CHAPTER 3 ---
+\section{Methodology and Design Workflow}
+
+\subsection{Proposed Conceptual Designs}
+To address the requirement of navigating raised window frames on flat glass façades, three distinct conceptual architectures will be developed and evaluated.
+
+\subsubsection{Concept 1: Articulated Three-Module Crawler}
+The first concept will feature a serial kinematic chain consisting of three independent vacuum/drive modules connected by two linear-actuated joints. During standard cleaning, all three modules will share the traction load and steer via differential drive. When a raised frame is detected, the leading module will lift and advance across the obstacle while the remaining two modules maintain adhesion. While this design offers high fault tolerance through physical redundancy, it requires complex joint synchronization, multi-chamber pressure balancing, and heavy reliance on coordinated control algorithms to prevent dynamic instability during transition.
+
+\begin{figure}[H]
+    \centering
+    % Uncomment and upload your image: \includegraphics[width=0.5\textwidth]{concept1.jpg}
+    \fbox{\parbox[c][4cm][c]{0.6\textwidth}{\centering [Insert Free-hand Sketch of Concept 1 Here]}}
+    \caption{Free-hand schematic of Concept 1: Articulated three-module crawler.}
+    \label{fig:concept1}
+\end{figure}
+
+\subsubsection{Concept 2: Rigid Single-Body with Dual-Axis Extendable Outriggers}
+The second concept will utilize a single rigid chassis equipped with a large central active-vacuum chamber for primary adhesion and a differential wheel drive for locomotion. To overcome frames, the system will incorporate four independently actuated telescopic shafts (outriggers) extending from the front and rear corners of the chassis. Each shaft will terminate in a secondary suction cup. When a frame is detected, the shafts will extend across the obstacle, anchoring the four suction cups onto the adjacent glass pane. The central vacuum will then temporarily disengage, allowing the robot to pull its body across the frame along the rigid shafts. This architecture will effectively eliminate the pendulum effect, provide four-point anchoring stability, and significantly simplify the electronic control logic compared to Concept 1.
+
+\begin{figure}[H]
+    \centering
+    % Uncomment and upload your image: \includegraphics[width=0.6\textwidth]{concept2.jpg}
+
+
+        \includegraphics[width=0.5\linewidth]{concept 2.jpg}
+         \caption{Free-hand schematic of Concept 2: Rigid chassis with four extendable anchor shafts.}
+    \label{fig:concept2}
+\end{figure}
+
+\subsubsection{Concept 3: Roof-Tethered Platform}
+The third concept will replace onboard climbing entirely by utilizing a rooftop infrastructure. A horizontal cleaning-head carrier will be suspended by cables from a roof winch. Vertical motion will be provided by the hoist, while horizontal motion will be driven by a linear traversing rail. While this will allow for continuous large-area cleaning with minimal onboard weight, it is highly limited by building-specific infrastructure, susceptibility to wind-induced pendulum sway, and lack of compact portability, making it unsuitable for a standalone, locally deployable robotic prototype.
+
+\begin{figure}[H]
+    \centering
+    % Uncomment and upload your image: \includegraphics[width=0.5\textwidth]{concept3.jpg}
+    \fbox{\parbox[c][4cm][c]{0.6\textwidth}{\centering [Insert Free-hand Sketch of Concept 3 Here]}}
+    \caption{Free-hand schematic of Concept 3: Roof-tethered platform.}
+    \label{fig:concept3}
+\end{figure}
+
+\subsection{Concept Evaluation and Selection}
+A qualitative comparison will be conducted to evaluate the three concepts against key engineering criteria. The evaluation will focus on mechanical configuration, working principle, potential advantages, main design considerations, and the specific evidence students must provide to validate the design.
+
+\begin{table}[H]
+\centering
+\caption{Qualitative Comparison of Alternatives}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|p{2.8cm}|p{3.8cm}|p{4.2cm}|p{3.5cm}|}
+\hline
+\textbf{Comparison Aspect} & \textbf{Concept 1: Articulated 3-Module} & \textbf{Concept 2: Rigid Single-Body with 4-Arm Bridge} & \textbf{Concept 3: Roof-Tethered Platform} \\ \hline
+\textbf{Configuration} & Three articulated chassis modules & \textbf{Single rigid chassis with dual-axis extending outrigger arms} & Rooftop hoist with suspended cleaning head \\ \hline
+\textbf{Working Principle} & Inchworm-like crawling across frames & \textbf{Central vacuum for cleaning; 4 anchor arms bridge across frames} & Vertical hoist and horizontal rail movement \\ \hline
+\textbf{Potential Advantage} & Continuous motion; proven academic precedent & \textbf{Eliminates pendulum effect; highly stable transfer; simple main body} & High payload capacity; no climbing required \\ \hline
+\textbf{Main Design Consideration} & Complex joint synchronization and multi-chamber pressure & \textbf{Bending stress on extended arms; wheel retraction during transfer} & Roof access; cable management; wind sway \\ \hline
+\textbf{Evidence Students Should Provide} & Joint torque; workspace envelope; multi-body kinematics & \textbf{Cantilever bending moment; shaft deflection; anchor vacuum force} & Cable tension; hoist motor sizing \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Selection and Justification:} 
+Based on the qualitative evaluation, \textbf{Concept 2} will be selected as the preferred design. While Concept 1 is academically proven, it introduces excessive mechanical complexity and dynamic instability. Concept 2 effectively merges the simplicity of a rigid crawler with a highly stable, four-point anchoring system. By utilizing rigid telescoping arms, the pendulum effect during transfer will be entirely eliminated, ensuring high reliability and simplifying the embedded control architecture.
+
+\subsection{Mechanical Design and Analysis Workflow}
+The mechanical design will begin with analytical sizing prior to CAD development. The primary mathematical focus will be on the cantilever bending moment of the extendable arms when the central vacuum is disengaged. The shear force and bending moment equations will be formulated to determine the required shaft diameter and material yield strength to prevent excessive deflection, which would otherwise break the anchor seals.
+
+Following analytical sizing, SolidWorks will be utilized to develop the 3D solid model. Structural finite element analysis (FEA) will be performed using SolidWorks Simulation to validate the stress distribution on the chassis and the outrigger mounting brackets under maximum load. If FEA reveals structural failure, the geometry will be iteratively revised before finalizing the 3D model.
+
+\subsection{System Dynamics and Control Strategy}
+The system dynamics will be formulated using Lagrangian mechanics to model the planar motion of the robot and the non-linear extension of the arms. The model will account for the mass shift as the arms extend. 
+
+A hierarchical control strategy will be designed. A PID controller will be tuned using MATLAB's Auto-tuner to regulate the differential wheel speeds for precise trajectory tracking. A secondary PI controller will regulate the blower speeds to maintain the required differential pressure in both the main chamber and the anchor cups. The system's observability and controllability will be analyzed via state-space representation, and the time-domain response (settling time, overshoot) will be simulated in MATLAB/Simulink.
+
+\subsection{Hardware Components and Prototyping}
+The physical prototype will be constructed using a 24V DC architecture. The system will feature:
+\begin{itemize}
+    \item \textbf{Actuation:} Geared DC motors with encoders for the differential drive, and high-torque linear actuators for the outrigger extension.
+    \item \textbf{Adhesion:} A high-power central vacuum blower and a secondary micro-blower (or valve manifold) for the four anchor cups.
+    \item \textbf{Sensors:} Time-of-Flight (ToF) sensors and inductive proximity sensors for frame detection.
+    \item \textbf{Control:} A real-time microcontroller for low-level PID loops and an ESP32 module for supervisory telemetry.
+\end{itemize}
+Signal conditioning and power distribution will be strictly isolated from the fluid/wet cleaning module to prevent electrical short circuits.
+
+\newpage
+% --- REFERENCES ---
+\section*{References}
+\begin{enumerate}
+    \item S. Akalanka, "Design and development of a glass cleaning robot for high-rise buildings," YouTube, Sep. 2023.
+    \item R. S. Bisht, P. M. Pathak, and S. K. Panigrahi, "Design and development of a glass facade cleaning robot," \textit{Mechanism and Machine Theory}, vol. 168, p. 104585, 2022.
+    \item B. Chu, K. Jung, C.-S. Han, and D. Hong, "A survey of climbing robots: Locomotion and adhesion," \textit{Int. J. Precis. Eng. Manuf.}, vol. 11, no. 4, pp. 633-647, 2010.
+    \item M. A. V. J. Muthugala, et al., "Design of an adhesion-aware façade cleaning robot," in \textit{2019 IEEE/RSJ IROS}, pp. 1441-1447.
+    \item R. Parween, et al., "Modeling and analysis of a glass façade robot," \textit{Buildings}, vol. 11, no. 6, p. 225, 2021.
+    \item T. Seo, Y. Jeon, C. Park, and J. Kim, "Survey on glass and façade-cleaning robots," \textit{Int. J. Precis. Eng. Manuf.-Green Tech.}, vol. 6, no. 2, pp. 367-376, 2019.
+    \item M. Vega-Heredia, et al., "Design and modelling of a modular window cleaning robot," \textit{Automation in Construction}, vol. 103, pp. 268-278, 2019.
+    \item Kariyawasam et al., "WiBot 1.0: A Modular Reconfigurable Glass Cleaning Robot," in \textit{IEEE ICRA}, 2024.
+\end{enumerate}
+
+\end{document}
