@@ -1,0 +1,53 @@
+#set document(title: "Design and Development of a Five-Degree-of-Freedom 3D Printer", author: "Thesis proposal draft")
+#set page(
+  paper: "a4",
+  margin: (top: 2.5cm, bottom: 2.5cm, left: 2.5cm, right: 2.5cm),
+  numbering: none,
+)
+#set text(font: "New Computer Modern", size: 12pt, lang: "en")
+#set par(justify: true, leading: 0.58em, spacing: 0.78em)
+#set list(indent: 1em, body-indent: 0.6em, spacing: 0.32em)
+#set enum(indent: 1em, body-indent: 0.6em, spacing: 0.32em)
+#set table(inset: (x: 4pt, y: 4pt), stroke: 0.45pt + rgb("#aab4ba"))
+#show table: set text(size: 9.4pt)
+#show table: set par(justify: false)
+#set figure(gap: 0.5em)
+#show figure.caption: set text(size: 10pt)
+#show figure.where(kind: table): set figure.caption(position: top)
+#show figure.where(kind: image): set figure.caption(position: bottom)
+#show heading.where(level: 1): it => {
+  pagebreak(weak: true)
+  block(above: 0pt, below: 0.9em, breakable: false)[#text(size: 15pt, weight: "bold")[#it.body]]
+}
+#show heading.where(level: 2): it => block(above: 0.95em, below: 0.4em, breakable: false)[#text(size: 13pt, weight: "bold")[#it.body]]
+#show heading.where(level: 3): it => block(above: 0.75em, below: 0.3em, breakable: false)[#text(size: 12pt, weight: "bold")[#it.body]]
+#show link: set text(fill: rgb("#214d74"))
+
+// Title page follows the supplied proposal's institutional format.
+#align(center)[
+  #v(0.8cm)
+  #text(size: 18pt, weight: "bold")[Design and Development of a \
+  Five-Degree-of-Freedom 3D Printer]
+  #v(1.4cm)
+  A Design of Mechatronics Thesis Proposal Submitted \
+  to the Department of Electromechanical Engineering
+  #v(1cm)
+  #strong[College of Engineering] \
+  #strong[Addis Ababa Science and Technology University]
+  #v(1.4cm)
+  #strong[By] \
+  #v(0.4cm)
+  \[Student Name(s) and ID Number(s)\]
+  #v(1.3cm)
+  #strong[Advisor:] \[Advisor Name\]
+  #v(1cm)
+  #text(size: 10.5pt, style: "italic")[Proposal draft: design targets and calculations are preliminary; experimental results are not yet available.]
+  #v(1fr)
+  \[Month Year\] \
+  Addis Ababa, Ethiopia
+]
+#pagebreak()
+#set page(numbering: "1", number-align: center)
+#counter(page).update(1)
+
+$body$

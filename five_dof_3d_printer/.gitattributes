@@ -1,0 +1,4 @@
+# These deliverables and figures are binary, not line-oriented text.
+*.pdf binary
+*.docx binary
+*.png binary
