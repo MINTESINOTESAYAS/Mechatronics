@@ -14,15 +14,71 @@
 \usepackage{amsmath}
 \usepackage{hyperref}
 \usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, decorations.pathmorphing, patterns}
+
+% \IfSketchExists{file}{if found}{if missing}: file test that also accepts spaces in the file name
+\newread\sketchfile
+\makeatletter
+\newcommand{\IfSketchExists}[1]{%
+  \openin\sketchfile="#1"\relax
+  \ifeof\sketchfile
+    \closein\sketchfile \expandafter\@secondoftwo
+  \else
+    \closein\sketchfile \expandafter\@firstoftwo
+  \fi}
+\makeatother
+
+% --- Drawing macros for the design figures of Chapter 4 (all coordinates in mm) ---
+% \cleanerglass{x1}{x2}: glass surface between x1 and x2
+\newcommand{\cleanerglass}[2]{%
+  \fill[pattern=north east lines, pattern color=gray!60] (#1,-9) rectangle (#2,0);
+  \draw[thick] (#1,0) -- (#2,0);}
+% \cleanerframe{x}{h}: front view of the rack frame, centred at x, half-length h
+\newcommand{\cleanerframe}[2]{%
+  \begin{scope}[shift={(#1,0)}]
+    \draw[fill=gray!10] (-#2,150) rectangle (#2,188);
+    \draw[fill=gray!35] (-#2+10,150) rectangle (#2-10,162);
+    \draw[fill=white]   (-#2+10,172) rectangle (#2-10,180);
+  \end{scope}}
+% \cleanermodule{x}{lift}{kind}: front view of one module at position x, raised by `lift'.
+%   kind = 1 or -1: traversing module (traverse motor on the +x or -x side); kind = 0: fixed centre module
+\newcommand{\cleanermodule}[3]{%
+  \begin{scope}[shift={(#1,0)}]
+    \begin{scope}[shift={(0,#2)}]
+      \draw[fill=gray!60] (-56,0) rectangle (-44,30) (44,0) rectangle (56,30);
+      \draw[pattern=north east lines] (-40,0) rectangle (40,4);
+      \draw[fill=gray!30] (-60,4) rectangle (60,10);
+      \draw[fill=gray!12] (-40,10) rectangle (40,72);
+      \draw[densely dashed] (-30,10) .. controls (-24,36) and (-7,32) .. (-6,50) -- (-6,72)
+                            (30,10) .. controls (24,36) and (7,32) .. (6,50) -- (6,72);
+      \draw[fill=gray!45] (-16,72) -- (-11,86) -- (11,86) -- (16,72) -- cycle;
+      \draw[fill=gray!70] (-38,72) rectangle (-30,98) (30,72) rectangle (38,98);
+    \end{scope}
+    \draw[line width=0.9pt] (-34,98+#2) -- (-34,140) (34,98+#2) -- (34,140);
+    \draw[fill=gray!30] (-45,140) rectangle (45,146);
+    \draw[fill=white] (-9,146) rectangle (9,172);
+    \ifnum#3=0
+      \draw[fill=black!75] (-60,164) rectangle (60,172);
+      \draw[densely dashed, fill=blue!15, fill opacity=0.45] (-75,104) rectangle (75,160);
+    \else
+      \draw[fill=gray!50] (-46,150) rectangle (46,162);
+      \draw[fill=gray!70] (#3*46,150) rectangle (#3*72,162);
+      \draw[fill=gray!25] (#3*-30,164) rectangle (#3*72,172);
+      \draw[fill=gray!70] (#3*50,172) rectangle (#3*68,200);
+    \fi
+  \end{scope}}
 
 % Formatting
 \setstretch{1.15}
+\setlength{\emergencystretch}{1em}
 \titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
 \titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
 
 \begin{document}
 
 % --- TITLE PAGE ---
+\hypersetup{pageanchor=false}
 \begin{titlepage}
     \centering
     \vspace*{1cm}
@@ -45,6 +101,7 @@
     November 2026\\
     Addis Ababa, Ethiopia
 \end{titlepage}
+\hypersetup{pageanchor=true}
 
 % --- ABSTRACT ---
 \section*{Abstract}
@@ -60,7 +117,7 @@ Manual cleaning of skyscraper glass façades exposes workers to severe fall haza
 \subsection{Background of the Study}
 Glass facades combine daylight, architectural quality, and environmental separation in contemporary high-rise buildings. However, their exterior surfaces accumulate dust and urban contaminants, necessitating periodic cleaning. The task is commonly performed by human workers suspended from ropes or platforms, which is highly dangerous and weather-dependent. 
 
-A facade-cleaning robot is not merely a domestic cleaner moved onto a vertical pane. It must generate sufficient normal adhesion without damaging the glass, maintain friction while wet, locomote despite gravity, and safely recover from faults. Curtain-wall facades contain millions and raised frames that interrupt tracks and vacuum seals. Therefore, adhesion, locomotion, perception, and frame-crossing must be treated as one coupled electromechanical problem.
+A facade-cleaning robot is not merely a domestic cleaner moved onto a vertical pane. It must generate sufficient normal adhesion without damaging the glass, maintain friction while wet, locomote despite gravity, and safely recover from faults. Curtain-wall facades contain mullions and raised frames that interrupt tracks and vacuum seals. Therefore, adhesion, locomotion, perception, and frame-crossing must be treated as one coupled electromechanical problem.
 
 \subsection{Problem Statement}
 The central problem is the absence of a locally developable, systematically verified robotic platform that can clean flat high-rise glass while maintaining energy-efficient adhesion and controlled transition across raised window frames. Current rigid single-pane robots stop at mullions because their suction seals and drive tracks are interrupted. Conversely, highly articulated multi-module robots suffer from complex joint synchronization and dynamic instability (pendulum effects) during transfers. There is a critical need for a robotic architecture that maintains the mechanical simplicity of a rigid crawler while providing a highly stable, redundant anchor system to bridge physical discontinuities on the glass facade.
@@ -129,11 +186,11 @@ The second concept will utilize a single rigid chassis equipped with a large cen
 
 \begin{figure}[H]
     \centering
-    % Uncomment and upload your image: \includegraphics[width=0.6\textwidth]{concept2.jpg}
-
-
-        \includegraphics[width=0.5\linewidth]{concept 2.jpg}
-         \caption{Free-hand schematic of Concept 2: Rigid chassis with four extendable anchor shafts.}
+    % Upload the sketch as "concept2.jpg" (or "concept 2.jpg"); a placeholder is shown until then.
+    \IfSketchExists{concept2.jpg}{\includegraphics[width=0.5\linewidth]{concept2.jpg}}{%
+    \IfSketchExists{concept 2.jpg}{\includegraphics[width=0.5\linewidth]{concept 2.jpg}}{%
+    \fbox{\parbox[c][4cm][c]{0.6\textwidth}{\centering [Insert Free-hand Sketch of Concept 2 Here]}}}}
+    \caption{Free-hand schematic of Concept 2: Rigid chassis with four extendable anchor shafts.}
     \label{fig:concept2}
 \end{figure}
 
@@ -155,7 +212,7 @@ A qualitative comparison will be conducted to evaluate the three concepts agains
 \centering
 \caption{Qualitative Comparison of Alternatives}
 \renewcommand{\arraystretch}{1.4}
-\begin{tabular}{|p{2.8cm}|p{3.8cm}|p{4.2cm}|p{3.5cm}|}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{2.9cm}|>{\raggedright\arraybackslash}p{3.7cm}|>{\raggedright\arraybackslash}p{4.2cm}|>{\raggedright\arraybackslash}p{3.4cm}|}
 \hline
 \textbf{Comparison Aspect} & \textbf{Concept 1: Articulated 3-Module} & \textbf{Concept 2: Rigid Single-Body with 4-Arm Bridge} & \textbf{Concept 3: Roof-Tethered Platform} \\ \hline
 \textbf{Configuration} & Three articulated chassis modules & \textbf{Single rigid chassis with dual-axis extending outrigger arms} & Rooftop hoist with suspended cleaning head \\ \hline
@@ -190,17 +247,470 @@ The physical prototype will be constructed using a 24V DC architecture. The syst
 Signal conditioning and power distribution will be strictly isolated from the fluid/wet cleaning module to prevent electrical short circuits.
 
 \newpage
+% --- CHAPTER 4 ---
+\section{Detailed Design of the Proposed Cleaner}
+
+\subsection{Design Basis and Overview}
+The cleaner detailed in this chapter will be a three-module platform derived from the Mantis-mini glass fa\c{c}ade robot of Parween et al.~[5]. From that reference design, the proposed cleaner will retain the suction module (an impeller-evacuated suction chamber, a two-wheel differential drive, and a cleaning brush), the two-actuator lifting mechanism that raises a module clear of a window frame, and the ball-bearing holder that lets each module steer in the plane of the glass. Two changes will be made to the reference design:
+\begin{itemize}
+    \item \textbf{Rack-and-pinion upper frame.} The fixed supporting frames that join the three holders of the reference design will be replaced by a rack-and-pinion traverse frame, referred to below as the rack frame. The two end modules will no longer sit at a fixed spacing; each will be driven along the rack frame by its own pinion. Combined with the rotation about its holder bearing, this will give each end cleaner two independent in-plane motions (translation and rotation), that is, two-dimensional positioning relative to the rack frame.
+    \item \textbf{Fixed central supply module.} The middle module will be clamped to the rack frame and will not traverse. It will carry the battery pack, the water tank, and the pump, and will supply electrical power and cleaning water to all three modules.
+\end{itemize}
+
+The layout will follow the free-hand sketch prepared for this design, which is redrawn in Figures~\ref{fig:topview} and~\ref{fig:frontview}. Table~\ref{tab:modules} summarises the role of each module.
+% To show the original free-hand sketch as well, upload the photo and add:
+% \includegraphics[width=0.8\textwidth]{freehand_sketch.jpg}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[x=0.0175cm, y=0.0175cm, >={Stealth[length=1.6mm]}, font=\scriptsize,
+        teeth/.style={decorate, decoration={zigzag, segment length=1.5mm, amplitude=0.45mm}},
+        lead/.style={draw=black!65, line width=0.3pt, {Circle[length=1.6pt, width=1.6pt]}-}]
+      % rack frame with the two internal racks
+      \draw[thick, fill=gray!20] (-430,-65) rectangle (430,65);
+      \fill[white] (-420,-48) rectangle (420,48);
+      \draw (-420,-48) -- (-420,48) (420,-48) -- (420,48);
+      \draw[teeth] (-420,48) -- (420,48);
+      \draw[teeth] (-420,-48) -- (420,-48);
+      % supply pods of the centre module
+      \draw[fill=orange!20] (-75,70) rectangle (75,112);
+      \node at (0,91) {Battery + BMS};
+      \draw[fill=blue!12] (-75,-112) rectangle (75,-70);
+      \node at (0,-91) {Tank + pump};
+      % cross-members of the fixed bridge
+      \draw[fill=gray!45] (-64,-65) rectangle (-56,65) (56,-65) rectangle (64,65);
+      % steerable holder of the centre module
+      \fill[gray!22] (0,0) circle (43);
+      \draw (0,0) circle (43) (0,0) circle (33);
+      \draw[gray] (0,-33) -- (0,33);
+      \foreach \a in {25,115,205,295} \draw[->] (\a:38) arc (\a:\a+40:38);
+      % end modules: pinion ring, drive gear and carriage
+      \foreach \cx/\cy/\sg in {-270/5/1, 270/-5/-1}{
+        \fill[gray!22] (\cx,\cy) circle (45);
+        \draw[teeth] (\cx,\cy) circle (45);
+        \draw (\cx,\cy) circle (33);
+        \draw[gray] (\cx-33,\cy) -- (\cx+33,\cy) (\cx,\cy-33) -- (\cx,\cy+33);
+        \fill[gray!65] (\cx+\sg*58.5,\cy) circle (13.5);
+        \draw[decorate, decoration={zigzag, segment length=1mm, amplitude=0.3mm}] (\cx+\sg*58.5,\cy) circle (13.5);
+        \draw[fill=gray!50, fill opacity=0.4, rounded corners=1pt] (\cx+\sg*-30,\cy-16) rectangle (\cx+\sg*78,\cy+16);
+      }
+      % linear guides and fixed bridge
+      \draw[fill=white] (-420,1) rectangle (-60,9);
+      \draw[fill=white] (60,-9) rectangle (420,-1);
+      \draw[fill=black!75] (-60,-9) rectangle (60,9);
+      \foreach \cx/\cy in {-270/5, 0/0, 270/-5}{
+        \draw[fill=white] (\cx,\cy) circle (9);
+        \draw (\cx,\cy) circle (4.5);
+      }
+      % drag chains
+      \draw[densely dashed, line width=0.8pt, blue!50!black] (-56,-30) -- (-200,-30) -- (-200,-11);
+      \draw[densely dashed, line width=0.8pt, blue!50!black] (56,30) -- (200,30) -- (200,11);
+      % travel ranges
+      \draw[<->] (-370,-84) -- (-170,-84);
+      \draw[line width=0.3pt] (-370,-70) -- (-370,-90) (-170,-70) -- (-170,-90);
+      \node[below] at (-270,-86) {travel $s_1 = 170$--$370$~mm};
+      \draw[<->] (170,84) -- (370,84);
+      \draw[line width=0.3pt] (170,70) -- (170,90) (370,70) -- (370,90);
+      \node[above] at (270,86) {travel $s_3 = 170$--$370$~mm};
+      % module names
+      \node[font=\scriptsize\bfseries] at (-270,-135) {Module 1 (traversing)};
+      \node[font=\scriptsize\bfseries] at (0,-135) {Module 2 (fixed supply)};
+      \node[font=\scriptsize\bfseries] at (270,-135) {Module 3 (traversing)};
+      % labels on the module 1 side
+      \draw[lead] (-395,50) -- (-395,90) node[above] {Rack A};
+      \draw[lead] (-305,35) -- (-340,150) node[above, align=center] {Pinion ring};
+      \draw[lead] (-270,5) -- (-262,90) node[above, align=center] {Hollow hub};
+      \draw[lead] (-211.5,5) -- (-165,150) node[above, align=center] {Drive gear and\\traverse motor};
+      \draw[lead] (-120,-30) -- (-135,-150) node[below, align=center] {Drag chain: cables\\and water hose};
+      % labels around the centre and on the module 3 side
+      \draw[lead] (55,7) -- (125,150) node[above, align=center] {Fixed bridge\\(clamps module 2)};
+      \draw[lead] (395,-5) -- (385,150) node[above, align=center] {Linear guide\\(bearing slider)};
+      \draw[lead] (38,-20) -- (135,-150) node[below, align=center] {Steerable holder\\(rotating part)};
+      \draw[lead] (330,-17) -- (330,-98) node[below, align=center] {Carriage};
+      \draw[lead] (400,-50) -- (400,-98) node[below] {Rack B};
+    \end{tikzpicture}
+    \caption{Top view of the proposed cleaner, redrawn from the free-hand sketch (gear teeth and the pinion offset are drawn enlarged).}
+    \label{fig:topview}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[x=0.0165cm, y=0.0165cm, >={Stealth[length=1.6mm]}, font=\scriptsize,
+        lead/.style={draw=black!65, line width=0.3pt, {Circle[length=1.6pt, width=1.6pt]}-}]
+      \cleanerglass{-470}{470}
+      \cleanerframe{0}{430}
+      \cleanermodule{-270}{0}{1}
+      \cleanermodule{0}{0}{0}
+      \cleanermodule{270}{0}{-1}
+      \draw[<->] (-340,215) -- (-200,215) node[midway, above] {traverse $s_1$};
+      \draw[<->] (200,215) -- (340,215) node[midway, above] {traverse $s_3$};
+      \draw[<->] (-355,20) -- (-355,70) node[midway, left] {lift};
+      \draw[<->] (355,20) -- (355,70) node[midway, right] {lift};
+      \draw[lead] (-120,176) -- (-120,215) node[above] {Linear guide};
+      \draw[lead] (-150,155) -- (-140,120) node[below] {Rack};
+      \draw[lead] (30,168) -- (30,215) node[above] {Fixed bridge};
+      \draw[lead] (72,125) -- (110,105) node[right] {Supply pod};
+      \node[font=\scriptsize\bfseries] at (-270,-28) {Module 1};
+      \node[font=\scriptsize\bfseries] at (0,-28) {Module 2};
+      \node[font=\scriptsize\bfseries] at (270,-28) {Module 3};
+      \node at (-420,-28) {Glass};
+    \end{tikzpicture}
+    \caption{Front view of the proposed cleaner on the glass, redrawn from the free-hand sketch.}
+    \label{fig:frontview}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Role of the three modules}
+\label{tab:modules}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|p{2.2cm}|>{\raggedright\arraybackslash}p{4.3cm}|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{4.3cm}|}
+\hline
+\textbf{Module} & \textbf{Mounting on the rack frame} & \textbf{Motions} & \textbf{Functions} \\ \hline
+1 (end) & Carriage on a linear guide, driven by pinion 1 on rack A & Traverse $s_1$, steering $\beta_1$, lift & Adhesion, driving, cleaning \\ \hline
+2 (centre) & Clamped to the rack frame by the fixed bridge & Steering $\beta_2$, lift & Adhesion, driving, cleaning; battery and water supply for all modules \\ \hline
+3 (end) & Carriage on a linear guide, driven by pinion 3 on rack B & Traverse $s_3$, steering $\beta_3$, lift & Adhesion, driving, cleaning \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Rack-and-Pinion Traverse Frame}
+The rack frame will be a rectangle of $860\text{ mm} \times 130\text{ mm}$ made of two side rails, two end plates, and the fixed bridge at mid-length. Each side rail will carry a spur rack with its teeth facing inward (rack~A and rack~B in Figure~\ref{fig:topview}). A miniature linear guide rail, the ``bearing slider'' of the sketch, will run along the top of the rack frame on each side of the bridge and will carry the carriage of one end module.
+
+Each carriage will have a hollow hub that projects downward. The pinion ring (60 teeth, module 1.5~mm, pitch diameter 90~mm) will turn on this hub on a ball bearing and mesh with the rack. A worm-geared DC motor with an encoder, mounted on the carriage, will drive the pinion ring through an 18-tooth drive gear; the worm stage will be self-locking so that the carriage holds its position when the motor is not powered. Below the pinion ring, the steerable holder of the module will hang from the same hub on a second ball bearing, as in the reference design, and the power cable and water hose of the module will pass through the bore of the hub.
+
+A single pinion cannot mesh with both racks at once: the two racks are fixed to each other, while opposite sides of a rotating pinion move in opposite directions, so the pinion would lock. Each pinion will therefore engage one rack only. The axis of carriage~1 will be offset by $e = 3\text{ mm}$ (two tooth modules) towards rack~A and the axis of carriage~3 by the same amount towards rack~B. With the rack pitch lines 96~mm apart, this leaves a 3~mm tip clearance on the side that is not engaged. The separating force of each mesh will be carried by the linear guide.
+
+Because the pinion ring acts as an idler between the drive gear and the rack, the travel of carriage $i$ ($i = 1, 3$) depends only on the drive gear radius $r_1 = 13.5\text{ mm}$ and the motor-shaft angle $\theta_{m,i}$:
+\begin{equation}
+    s_i = r_1\,\theta_{m,i}, \qquad \dot{s}_i = r_1\,\omega_{m,i}.
+    \label{eq:rack}
+\end{equation}
+With the centre of the rack frame at $\mathbf{P}_c$ and the rack frame at an angle $\alpha$ to the horizontal, the centres of the three modules on the glass are
+\begin{equation}
+    \mathbf{P}_1 = \mathbf{P}_c + \mathbf{R}(\alpha)\begin{bmatrix} -s_1 \\ e \end{bmatrix}, \qquad
+    \mathbf{P}_2 = \mathbf{P}_c, \qquad
+    \mathbf{P}_3 = \mathbf{P}_c + \mathbf{R}(\alpha)\begin{bmatrix} s_3 \\ -e \end{bmatrix},
+    \label{eq:positions}
+\end{equation}
+where $\mathbf{R}(\alpha)$ is the planar rotation matrix. Each end module will travel between $s = 170\text{ mm}$ and $s = 370\text{ mm}$ from the centre of the rack frame. The lower limit is the smallest centre distance at which two neighbouring $120\text{ mm}$ square modules can both rotate freely. The stroke $S$ is set by the requirement that a lifted module must be carried over a window frame in one move:
+\begin{equation}
+    S \geq b + w_m + 2\delta = 120 + 50 + 2(15) = 200\text{ mm},
+    \label{eq:stroke}
+\end{equation}
+where $b$ is the length of the module base, $w_m$ is the width of the design window frame (mullion), and $\delta$ is the stand-off kept between the module and the window frame before and after the move.
+
+\subsection{Traversing Cleaning Modules (Modules 1 and 3)}
+The two end modules will follow the suction module of the reference design (Figure~\ref{fig:modules}a). Each will consist of:
+\begin{itemize}
+    \item \textbf{Suction chamber and impeller.} A chamber with a $120\text{ mm} \times 120\text{ mm}$ base and a central opening will be evacuated by a 24~V impeller mounted on top of it. The pressure difference will press the module against the glass, and a pressure sensor in the chamber will provide feedback for the suction controller.
+    \item \textbf{Differential drive.} Two wheels with silicone tyres, each driven by a 12~V micro gear motor with an encoder, will drive the module and steer it about its holder bearing.
+    \item \textbf{Lifting mechanism.} Two miniature 12~V linear actuators placed diagonally, guided by two carbon-fibre rods, will connect the module to its steerable holder and lift it clear of a window frame. The guide rods will carry the transverse load so that the actuators are loaded only along their axes.
+    \item \textbf{Cleaning unit.} A brush holder on the leading edge of the base will carry a microfibre brush strip, with a spray nozzle directly ahead of it fed from the water supply of module~2.
+    \item \textbf{Carriage and pinion.} The steerable holder will hang from the carriage described in the previous section, so that the whole module can traverse the rack frame.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[x=0.025cm, y=0.025cm, >={Stealth[length=1.6mm]}, font=\scriptsize,
+        lead/.style={draw=black!65, line width=0.3pt, {Circle[length=1.6pt, width=1.6pt]}-}]
+      % (a) traversing end module
+      \begin{scope}[shift={(-95,0)}]
+        \cleanerglass{-80}{80}
+        \cleanerframe{0}{80}
+        \cleanermodule{0}{0}{-1}
+        \draw[lead] (-64,192) -- (-90,196) node[left] {Traverse motor};
+        \draw[lead] (-66,176) -- (-90,178) node[left] {Linear guide};
+        \draw[lead] (-70,168) -- (-90,160) node[left] {Carriage};
+        \draw[lead] (-68,156) -- (-90,142) node[left] {Drive gear};
+        \draw[lead] (-38,151) -- (-90,124) node[left] {Pinion ring and rack};
+        \draw[lead] (-43,143) -- (-90,106) node[left] {Steerable holder};
+        \draw[lead] (-34,122) -- (-90,88) node[left] {Guide rod};
+        \draw[lead] (-36,90) -- (-90,70) node[left] {Linear actuator};
+        \draw[lead] (-13,79) -- (-90,52) node[left] {Impeller};
+        \draw[lead] (-32,38) -- (-90,34) node[left] {Suction chamber};
+        \draw[lead] (-52,20) -- (-90,16) node[left] {Wheel};
+        \draw[lead] (-30,2) -- (-90,-4) node[left] {Brush and nozzle};
+        \draw[<->] (70,12) -- (70,47) node[midway, right] {lift};
+        \node[font=\scriptsize\bfseries] at (0,-24) {(a)};
+      \end{scope}
+      % (b) fixed centre module
+      \begin{scope}[shift={(95,0)}]
+        \cleanerglass{-95}{95}
+        \cleanerframe{0}{95}
+        \cleanermodule{0}{0}{0}
+        \draw[lead] (70,184) -- (103,196) node[right] {Rack frame};
+        \draw[lead] (50,168) -- (103,176) node[right] {Fixed bridge};
+        \draw[lead] (70,140) -- (103,146) node[right, align=left] {Supply pod: tank and\\pump (battery pack\\on the far side)};
+        \draw[lead] (42,143) -- (103,112) node[right] {Steerable holder};
+        \draw[lead] (36,90) -- (103,90) node[right] {Lift actuators};
+        \draw[lead] (30,40) -- (103,56) node[right, align=left] {Suction module\\(as in (a))};
+        \node[font=\scriptsize\bfseries] at (0,-24) {(b)};
+      \end{scope}
+    \end{tikzpicture}
+    \caption{Module details: (a) traversing end module (modules 1 and 3); (b) fixed central supply module (module 2).}
+    \label{fig:modules}
+\end{figure}
+
+\subsection{Fixed Central Supply Module (Module 2)}
+Module~2 will use the same suction module, lifting mechanism, and steerable holder as the end modules, but its hub will be clamped to the rack frame by the fixed bridge instead of riding on a carriage (Figure~\ref{fig:modules}b). It will therefore stay at mid-length of the rack frame while its holder remains free to rotate, which is the ``rotating part of the centre module'' in the sketch.
+
+Two supply pods will be mounted on the bridge, one on each side of the rack frame: the battery pack with its battery management system on one side, and the water tank with the pump and valve manifold on the other. Mounting the pods on the rack frame rather than on the suction module keeps their weight off the lifting actuators and places the heaviest items at the centre of the robot. Hanging them beside the rack frame rather than on top of it keeps them nearer the glass, which limits the overturning moment. Power and signal cables and the water hoses will run from module~2 to each end carriage in a drag chain along the rack frame, and then through the hollow hub to the module below. The steering angle of each module will be limited to $\pm 180^\circ$ so that the cable and hose are not twisted.
+
+\subsection{Water and Power Supply}
+Figure~\ref{fig:supply} shows how module~2 will supply the cleaner.
+
+\textbf{Water supply.} A 0.3~L tank with a level sensor will feed a 12~V diaphragm pump through a filter. The pump will deliver to a manifold with three solenoid valves, one per module, so that only the nozzles of the modules that are cleaning are opened. Each nozzle will wet the glass directly ahead of the brush strip.
+
+\textbf{Battery supply.} A six-cell lithium-ion pack (22.2~V nominal, 3~Ah) with a battery management system will supply a 24~V bus through a fuse, a main switch, and an emergency stop, in line with the 24~V architecture described in the previous chapter. The impellers will be driven from the 24~V bus. A 12~V converter will supply the wheel motors, traverse motors, lift actuators, pump, and valves, and a 5~V converter will supply the controller and the sensors. All electrical parts in the supply pods will be separated from the water tank and sealed against splashing.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>={Stealth[length=2mm]}, font=\scriptsize,
+        blk/.style={draw, rounded corners=2pt, align=center, minimum height=0.95cm, inner sep=3pt},
+        pw/.style={draw=red!65!black, line width=0.9pt},
+        wt/.style={draw=blue!65!black, line width=0.9pt},
+        sg/.style={draw=black!70, densely dashed, line width=0.5pt}]
+      % power chain
+      \node[blk, fill=orange!20, text width=2.5cm] (bat) at (0,0) {Battery pack\\6S Li-ion, 22.2 V,\\3 Ah, with BMS};
+      \node[blk, text width=2.1cm] (prot) at (3.3,0) {Fuse, main switch, emergency stop};
+      \node[blk, text width=1.6cm] (c5) at (7.0,0) {DC--DC\\24 V / 5 V};
+      \node[blk, text width=1.6cm] (c12) at (7.0,-1.6) {DC--DC\\24 V / 12 V};
+      \node[blk, fill=gray!12, text width=4.3cm] (imp) at (11.4,1.6) {Impeller drivers and\\three suction impellers};
+      \node[blk, fill=gray!12, text width=4.3cm] (ctl) at (11.4,0) {Controller (real-time microcontroller and ESP32) and sensors};
+      \node[blk, fill=gray!12, text width=4.3cm] (drv) at (11.4,-1.6) {Drivers: 6 wheel motors, 2 traverse motors, 6 lift actuators, pump, valves};
+      % water chain
+      \node[blk, fill=blue!12, text width=2.5cm] (tank) at (0,-3.7) {Water tank 0.3 L\\with level sensor};
+      \node[blk, fill=blue!12, text width=2.1cm] (pump) at (3.3,-3.7) {Filter and\\12 V pump};
+      \node[blk, fill=blue!12, text width=1.6cm] (man) at (7.0,-3.7) {Manifold,\\3 valves};
+      \node[blk, fill=blue!12, text width=4.3cm] (noz) at (11.4,-3.7) {Spray nozzles at the brushes of modules 1, 2 and 3};
+      % 24 V bus
+      \draw[pw, ->] (bat) -- (prot);
+      \draw[pw] (prot.east) -- (5.2,0);
+      \draw[pw] (5.2,1.6) -- (5.2,-1.6);
+      \node[rotate=90, anchor=south] at (5.15,0.8) {24 V bus};
+      \draw[pw, ->] (5.2,1.6) -- (imp.west);
+      \draw[pw, ->] (5.2,0) -- (c5.west);
+      \draw[pw, ->] (5.2,-1.6) -- (c12.west);
+      \draw[pw, ->] (c5) -- (ctl);
+      \draw[pw, ->] (c12) -- (drv);
+      % drivers to pump and valves
+      \draw[pw, ->] (drv.south) -- ++(0,-0.45) -| (pump.north);
+      \draw[pw, ->] (7.0,-2.6) -- (man.north);
+      % water
+      \draw[wt, ->] (tank) -- (pump);
+      \draw[wt, ->] (pump) -- (man);
+      \draw[wt, ->] (man) -- (noz);
+      % control signals
+      \draw[sg, ->] (ctl.north) -- (imp.south);
+      \draw[sg, ->] (ctl.south) -- (drv.north);
+      % legend
+      \draw[pw] (0.2,-4.9) -- (1.0,-4.9) node[right, black] {electrical power};
+      \draw[wt] (4.2,-4.9) -- (5.0,-4.9) node[right, black] {water};
+      \draw[sg] (7.0,-4.9) -- (7.8,-4.9) node[right, black] {control signals};
+    \end{tikzpicture}
+    \caption{Battery and water supply from the fixed central module.}
+    \label{fig:supply}
+\end{figure}
+
+\subsection{Two-Dimensional Motion and Frame Crossing}
+The cleaner will have three operating modes:
+\begin{enumerate}
+    \item \textbf{Platform driving.} With the carriages held in position, all three modules will remain attached and drive on their wheels. As in the reference design, the modules will steer about their holder bearings, so the platform can move along and across the pane while the rack frame keeps its orientation.
+    \item \textbf{Local two-dimensional cleaning.} With module~2 and one end module holding the rack frame, the other end module will roll along it with its wheel speed matched to the pinion speed of Equation~(\ref{eq:rack}). The module will scrub a 200~mm stroke along the rack frame, and the platform will step across the pane between strokes, so the brush covers the glass in two directions.
+    \item \textbf{Frame crossing.} A window frame will be crossed one module at a time, as shown in Figure~\ref{fig:crossing}. Each module will be brought to the stand-off distance $\delta$ from the window frame, its suction will be switched off, and it will be lifted and carried over the window frame by the rack-and-pinion drive rather than by wheel traction. An end module will be moved by its own pinion; module~2 will be moved by running both pinions together so that the rack frame slides through the two attached end modules.
+\end{enumerate}
+Two modules will remain attached at all times. A module will be released only when the pressure sensors of the other two confirm the holding pressure, and the travel of each carriage will be referenced by limit switches at both ends of its stroke.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[x=0.0105cm, y=0.0105cm, >={Stealth[length=1.6mm]}, font=\scriptsize]
+      % (a)
+      \begin{scope}[shift={(0,0)}]
+        \cleanerglass{-700}{750}
+        \draw[fill=gray!65] (0,0) rectangle (50,25);
+        \cleanerframe{-245}{430}
+        \cleanermodule{-415}{0}{1}
+        \cleanermodule{-245}{0}{0}
+        \cleanermodule{-75}{0}{-1}
+        \node[anchor=west] at (-700,240) {(a) All modules attached on pane A; module 3 at the stand-off distance from the window frame.};
+        \node at (-640,35) {Pane A};
+        \node at (690,35) {Pane B};
+        \node[anchor=west] at (58,22) {Window frame};
+      \end{scope}
+      % (b)
+      \begin{scope}[shift={(0,-300)}]
+        \cleanerglass{-700}{750}
+        \draw[fill=gray!65] (0,0) rectangle (50,25);
+        \cleanerframe{-245}{430}
+        \cleanermodule{-415}{0}{1}
+        \cleanermodule{-245}{0}{0}
+        \cleanermodule{25}{35}{-1}
+        \draw[->, thick] (-30,215) -- (80,215);
+        \node[anchor=west] at (-700,240) {(b) Module 3 lifted and driven outward by its pinion.};
+      \end{scope}
+      % (c)
+      \begin{scope}[shift={(0,-600)}]
+        \cleanerglass{-700}{750}
+        \draw[fill=gray!65] (0,0) rectangle (50,25);
+        \cleanerframe{25}{430}
+        \cleanermodule{-245}{0}{1}
+        \cleanermodule{25}{35}{0}
+        \cleanermodule{295}{0}{-1}
+        \draw[->, thick] (-30,215) -- (80,215);
+        \node[anchor=west] at (-700,240) {(c) Module 2 lifted; both pinions slide the rack frame forward.};
+      \end{scope}
+      % (d)
+      \begin{scope}[shift={(0,-900)}]
+        \cleanerglass{-700}{750}
+        \draw[fill=gray!65] (0,0) rectangle (50,25);
+        \cleanerframe{295}{430}
+        \cleanermodule{25}{35}{1}
+        \cleanermodule{295}{0}{0}
+        \cleanermodule{465}{0}{-1}
+        \draw[->, thick] (-30,215) -- (80,215);
+        \node[anchor=west] at (-700,240) {(d) Module 1 lifted and driven inward by its pinion.};
+      \end{scope}
+    \end{tikzpicture}
+    \caption{Frame-crossing sequence. Between stages, the cleaner advances in shorter steps of the same kind to bring the next module to the stand-off distance.}
+    \label{fig:crossing}
+\end{figure}
+
+\subsection{Preliminary Sizing}
+The values in this section are first estimates. They will be updated from the SolidWorks model and confirmed by the tests on the glass rig.
+
+\subsubsection{Mass Budget}
+Table~\ref{tab:mass} gives the estimated mass of the cleaner. A design mass of $m = 4.8\text{ kg}$ will be used.
+
+\begin{table}[H]
+\centering
+\caption{Preliminary mass budget (estimates)}
+\label{tab:mass}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{10.5cm}|r|}
+\hline
+\textbf{Item} & \textbf{Mass (kg)} \\ \hline
+Suction and cleaning modules ($3 \times 0.70$) & 2.10 \\ \hline
+Rack frame, linear guides, and fixed bridge & 0.60 \\ \hline
+Carriages with pinion ring and traverse motor ($2 \times 0.20$) & 0.40 \\ \hline
+Battery pack with battery management system & 0.40 \\ \hline
+Water tank, pump, valves, and hoses (empty) & 0.20 \\ \hline
+Water (0.3~L) & 0.30 \\ \hline
+Electronics, wiring, and drag chains & 0.35 \\ \hline
+Contingency (10\%) & 0.44 \\ \hline
+\textbf{Total} & \textbf{4.79} \\ \hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Adhesion}
+Following the static equilibrium used in~[5], the friction generated by the suction force of the $n$ attached modules must carry the weight of the cleaner. With a safety factor $SF$, the required suction pressure is
+\begin{equation}
+    p_s \geq \frac{SF \cdot m \cdot g}{\mu \cdot n \cdot A_c}.
+    \label{eq:suction}
+\end{equation}
+The governing case is frame crossing, when only two modules are attached ($n = 2$). With $A_c = 0.12 \times 0.12 = 0.0144\text{ m}^2$, an assumed friction coefficient $\mu = 0.5$ for silicone tyres on wet glass, and $SF = 1.5$:
+\begin{equation}
+    p_s \geq \frac{1.5 \times 4.8 \times 9.81}{0.5 \times 2 \times 0.0144} \approx 4.9\text{ kPa}.
+\end{equation}
+With all three modules attached, the requirement falls to 3.3~kPa. The friction coefficient will be measured on the glass rig, since the result is inversely proportional to it.
+
+The cleaner must also not tip away from the glass. With the centre of mass at an estimated $h_c = 100\text{ mm}$ from the glass and the lower contact edge of each module $a = 60\text{ mm}$ below its centre, preventing tipping requires
+\begin{equation}
+    p_s \geq \frac{SF \cdot m \cdot g \cdot h_c}{n \cdot A_c \cdot a} = \frac{1.5 \times 4.8 \times 9.81 \times 0.100}{2 \times 0.0144 \times 0.060} \approx 4.1\text{ kPa},
+\end{equation}
+which is lower than the sliding requirement, so sliding governs.
+
+The impeller speed needed for 4.9~kPa can be estimated from the Bernoulli relation of~[5], $p_s = \tfrac{1}{2}\rho\, r_2^2\, \omega^2 \left[1 - (A_2/A_1)^2\right]$. For an impeller radius $r_2 = 35\text{ mm}$, an area ratio $A_2/A_1 = 0.2$, and $\rho = 1.2\text{ kg/m}^3$:
+\begin{equation}
+    \omega = \sqrt{\frac{2\,p_s}{\rho\, r_2^2 \left[1 - (A_2/A_1)^2\right]}} \approx 2640\text{ rad/s} \approx 25\,200\text{ rpm}.
+\end{equation}
+This is an order-of-magnitude estimate only, because the relation neglects viscous losses and leakage under the chamber edge. The impeller will be selected from flow simulation and pressure measurements on a single module, as was done in~[5].
+
+\subsubsection{Rack-and-Pinion Drive}
+The heaviest traverse load occurs when the rack frame is vertical and the two pinions raise the rack frame, module~2, and the supply pods through the attached end modules. The moved mass is the design mass less the two attached end modules and their carriages, $m_f \approx 2.8\text{ kg}$, so the tangential force on each pinion is
+\begin{equation}
+    F_t = \frac{SF \cdot m_f \cdot g}{2} = \frac{1.5 \times 2.8 \times 9.81}{2} \approx 20.6\text{ N}.
+\end{equation}
+The pinion ring transmits this force unchanged to the drive gear, so with a gear efficiency $\eta = 0.85$ the required motor output torque is
+\begin{equation}
+    T_m = \frac{F_t \cdot r_1}{\eta} = \frac{20.6 \times 0.0135}{0.85} \approx 0.33\text{ N}\,\text{m}.
+\end{equation}
+A traverse speed of 20~mm/s corresponds to a drive gear speed of about 14~rpm, so a 200~mm stroke takes 10~s. The bending stress at the root of the drive gear teeth, from the Lewis equation with a face width $b_f = 10\text{ mm}$, a module $m_n = 1.5\text{ mm}$, and a form factor $Y = 0.309$ for 18 teeth, is
+\begin{equation}
+    \sigma_b = \frac{F_t}{b_f \cdot m_n \cdot Y} = \frac{20.6}{10 \times 1.5 \times 0.309} \approx 4.4\text{ MPa},
+\end{equation}
+far below the 40~MPa tensile strength quoted for PLA in~[5]. The gears and racks can therefore be 3D printed for the prototype.
+
+\subsubsection{Lifting Stroke}
+To clear a design window frame of height $h_m = 25\text{ mm}$ with a 10~mm margin, each module must be lifted by 35~mm. Linear actuators with a 50~mm stroke will be used.
+
+\subsubsection{Battery and Water Capacity}
+Table~\ref{tab:power} gives the estimated average power demand. The six-cell, 3~Ah pack stores $22.2 \times 3 \approx 67\text{ Wh}$. Using 80\% of this capacity, the operating time will be about
+\begin{equation}
+    t = \frac{0.8 \times 67}{139} \approx 0.38\text{ h} \approx 23\text{ min}.
+\end{equation}
+The suction impellers account for most of the demand, so the operating time depends mainly on how well the chamber edge seals against the glass.
+
+\begin{table}[H]
+\centering
+\caption{Preliminary power budget (assumed allowances)}
+\label{tab:power}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{5.2cm}|c|c|c|}
+\hline
+\textbf{Load} & \textbf{Rated power (W)} & \textbf{Duty} & \textbf{Average (W)} \\ \hline
+Suction impellers & $3 \times 40$ & 100\% & 120 \\ \hline
+Wheel motors & $6 \times 1.5$ & 100\% & 9 \\ \hline
+Traverse motors & $2 \times 5$ & 20\% & 2 \\ \hline
+Lift actuators & $6 \times 5$ & 5\% & 1.5 \\ \hline
+Pump and valves & 5 & 30\% & 1.5 \\ \hline
+Controller and sensors & 5 & 100\% & 5 \\ \hline
+\textbf{Total} & & & \textbf{139} \\ \hline
+\end{tabular}
+\end{table}
+
+For the water supply, an assumed dosing of 20~mL per square metre of glass gives a coverage of $300 / 20 = 15\text{ m}^2$ per tank, or about six passes over the $1.2\text{ m} \times 2.0\text{ m}$ glass rig.
+
+\subsection{Summary of Design Parameters}
+Table~\ref{tab:params} lists the main parameters of the proposed cleaner.
+
+\begin{table}[H]
+\centering
+\caption{Main design parameters of the proposed cleaner (preliminary)}
+\label{tab:params}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{7.6cm}|p{6.6cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value} \\ \hline
+Number of modules & 3 (two traversing, one fixed) \\ \hline
+Overall size (length $\times$ width $\times$ height) & $860 \times 225 \times 200$~mm \\ \hline
+Design mass, including 0.3~L of water & 4.8~kg \\ \hline
+Suction base of each module & $120 \times 120$~mm \\ \hline
+Required suction pressure (two modules holding) & 4.9~kPa \\ \hline
+Rack and gear module; pressure angle & 1.5~mm; $20^\circ$ \\ \hline
+Pinion ring & 60 teeth, 90~mm pitch diameter \\ \hline
+Drive gear & 18 teeth, 27~mm pitch diameter \\ \hline
+Distance between rack pitch lines; pinion offset & 96~mm; 3~mm \\ \hline
+Travel of each end module from the centre of the rack frame & 170--370~mm (stroke 200~mm) \\ \hline
+Traverse speed; motor torque & 20~mm/s; 0.33~N\,m \\ \hline
+Lifting stroke required; actuator stroke & 35~mm; 50~mm \\ \hline
+Design window frame (width $\times$ height) & $50 \times 25$~mm \\ \hline
+Battery pack & 6S lithium-ion, 22.2~V, 3~Ah \\ \hline
+Water tank & 0.3~L \\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
 % --- REFERENCES ---
 \section*{References}
 \begin{enumerate}
-    \item S. Akalanka, "Design and development of a glass cleaning robot for high-rise buildings," YouTube, Sep. 2023.
-    \item R. S. Bisht, P. M. Pathak, and S. K. Panigrahi, "Design and development of a glass facade cleaning robot," \textit{Mechanism and Machine Theory}, vol. 168, p. 104585, 2022.
-    \item B. Chu, K. Jung, C.-S. Han, and D. Hong, "A survey of climbing robots: Locomotion and adhesion," \textit{Int. J. Precis. Eng. Manuf.}, vol. 11, no. 4, pp. 633-647, 2010.
-    \item M. A. V. J. Muthugala, et al., "Design of an adhesion-aware façade cleaning robot," in \textit{2019 IEEE/RSJ IROS}, pp. 1441-1447.
-    \item R. Parween, et al., "Modeling and analysis of a glass façade robot," \textit{Buildings}, vol. 11, no. 6, p. 225, 2021.
-    \item T. Seo, Y. Jeon, C. Park, and J. Kim, "Survey on glass and façade-cleaning robots," \textit{Int. J. Precis. Eng. Manuf.-Green Tech.}, vol. 6, no. 2, pp. 367-376, 2019.
-    \item M. Vega-Heredia, et al., "Design and modelling of a modular window cleaning robot," \textit{Automation in Construction}, vol. 103, pp. 268-278, 2019.
-    \item Kariyawasam et al., "WiBot 1.0: A Modular Reconfigurable Glass Cleaning Robot," in \textit{IEEE ICRA}, 2024.
+    \item S. Akalanka, ``Design and development of a glass cleaning robot for high-rise buildings,'' YouTube, Sep. 2023.
+    \item R. S. Bisht, P. M. Pathak, and S. K. Panigrahi, ``Design and development of a glass facade cleaning robot,'' \textit{Mechanism and Machine Theory}, vol. 168, p. 104585, 2022.
+    \item B. Chu, K. Jung, C.-S. Han, and D. Hong, ``A survey of climbing robots: Locomotion and adhesion,'' \textit{Int. J. Precis. Eng. Manuf.}, vol. 11, no. 4, pp. 633-647, 2010.
+    \item M. A. V. J. Muthugala, et al., ``Design of an adhesion-aware façade cleaning robot,'' in \textit{2019 IEEE/RSJ IROS}, pp. 1441-1447.
+    \item R. Parween, et al., ``Modeling and analysis of a glass façade robot,'' \textit{Buildings}, vol. 11, no. 6, p. 225, 2021.
+    \item T. Seo, Y. Jeon, C. Park, and J. Kim, ``Survey on glass and façade-cleaning robots,'' \textit{Int. J. Precis. Eng. Manuf.-Green Tech.}, vol. 6, no. 2, pp. 367-376, 2019.
+    \item M. Vega-Heredia, et al., ``Design and modelling of a modular window cleaning robot,'' \textit{Automation in Construction}, vol. 103, pp. 268-278, 2019.
+    \item Kariyawasam et al., ``WiBot 1.0: A Modular Reconfigurable Glass Cleaning Robot,'' in \textit{IEEE ICRA}, 2024.
 \end{enumerate}
 
 \end{document}
