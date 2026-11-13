@@ -29,74 +29,45 @@
   \fi}
 \makeatother
 
-% --- Drawing macros for the design figures of Chapter 4 (schematic drawing units, not dimensions) ---
+% --- Drawing macros for the Concept 1 sketch (schematic drawing units) ---
 % \cleanerglass{x1}{x2}: glass surface between x1 and x2
 \newcommand{\cleanerglass}[2]{%
   \fill[pattern=north east lines, pattern color=gray!60] (#1,-9) rectangle (#2,0);
   \draw[thick] (#1,0) -- (#2,0);}
-% \cleanerframe{x}{h}{raise}: front view of the rack frame, centred at x, half-length h, raised off its normal height by `raise'
-\newcommand{\cleanerframe}[3]{%
-  \begin{scope}[shift={(#1,#3)}]
+% \cleanerframe{x}{h}: front view of the rack frame, centred at x, half-length h
+\newcommand{\cleanerframe}[2]{%
+  \begin{scope}[shift={(#1,0)}]
     \draw[fill=gray!10] (-#2,150) rectangle (#2,188);
     \draw[fill=gray!35] (-#2+10,150) rectangle (#2-10,162);
-    \draw[fill=white]   (-#2,188) rectangle (#2,192);
+    \draw[fill=white]   (-#2+10,172) rectangle (#2-10,180);
   \end{scope}}
-% \cleanerend{x}{lift}{side}{raise}: front view of an end cleaning module at position x.
-%   lift  = height of the suction cup above the glass
-%   side  = 1 or -1: the brush bar reaches towards +x or -x
-%   raise = height by which the rack frame is pushed away from its normal position
-\newcommand{\cleanerbarlen}{162}
-\newcommand{\cleanerend}[4]{%
+% \cleanermodule{x}{lift}{kind}: front view of one module at position x, raised by `lift'.
+%   kind = 1 or -1: traversing module (traverse motor on the +x or -x side); kind = 0: fixed centre module
+\newcommand{\cleanermodule}[3]{%
   \begin{scope}[shift={(#1,0)}]
-    \begin{scope}[shift={(0,#4)}]
-      \draw[fill=white] (-38,146) rectangle (-32,200) (32,146) rectangle (38,200);
-      \draw[fill=gray!30] (-42,140) rectangle (42,146);
-      \draw[fill=gray!55] (-28,151) rectangle (28,161);
-      \draw[fill=gray!60] (-42,192) rectangle (42,200);
-      \draw[fill=gray!30] (-46,200) rectangle (46,206);
-      \draw[fill=gray!70] (-11,206) rectangle (11,232);
-    \end{scope}
-    \draw[line width=0.9pt] (-27,80+#2) -- (-27,140+#4) (27,80+#2) -- (27,140+#4);
     \begin{scope}[shift={(0,#2)}]
-      \draw[pattern=north east lines] (-35,0) rectangle (35,4);
-      \draw[fill=gray!12] (-35,4) rectangle (35,46);
-      \draw[densely dashed] (-27,4) .. controls (-22,24) and (-6,22) .. (-5,34) -- (-5,46)
-                            (27,4) .. controls (22,24) and (6,22) .. (5,34) -- (5,46);
-      \draw[fill=gray!45] (-12,46) -- (-8,57) -- (8,57) -- (12,46) -- cycle;
-      \draw[fill=gray!70] (-31,46) rectangle (-23,80) (23,46) rectangle (31,80);
-      \pgfmathsetmacro{\cleanerbristle}{max(-#2,-8)}
-      \draw[fill=teal!35] (#3*-35,\cleanerbristle) rectangle (#3*\cleanerbarlen,10);
-      \draw[fill=teal!60!black] (#3*-35,10) rectangle (#3*\cleanerbarlen,18);
+      \draw[fill=gray!60] (-56,0) rectangle (-44,30) (44,0) rectangle (56,30);
+      \draw[pattern=north east lines] (-40,0) rectangle (40,4);
+      \draw[fill=gray!30] (-60,4) rectangle (60,10);
+      \draw[fill=gray!12] (-40,10) rectangle (40,72);
+      \draw[densely dashed] (-30,10) .. controls (-24,36) and (-7,32) .. (-6,50) -- (-6,72)
+                            (30,10) .. controls (24,36) and (7,32) .. (6,50) -- (6,72);
+      \draw[fill=gray!45] (-16,72) -- (-11,86) -- (11,86) -- (16,72) -- cycle;
+      \draw[fill=gray!70] (-38,72) rectangle (-30,98) (30,72) rectangle (38,98);
     \end{scope}
+    \draw[line width=0.9pt] (-34,98+#2) -- (-34,140) (34,98+#2) -- (34,140);
+    \draw[fill=gray!30] (-45,140) rectangle (45,146);
+    \draw[fill=white] (-9,146) rectangle (9,172);
+    \ifnum#3=0
+      \draw[fill=black!75] (-60,164) rectangle (60,172);
+      \draw[densely dashed, fill=blue!15, fill opacity=0.45] (-75,104) rectangle (75,160);
+    \else
+      \draw[fill=gray!50] (-46,150) rectangle (46,162);
+      \draw[fill=gray!70] (#3*46,150) rectangle (#3*72,162);
+      \draw[fill=gray!25] (#3*-30,164) rectangle (#3*72,172);
+      \draw[fill=gray!70] (#3*50,172) rectangle (#3*68,200);
+    \fi
   \end{scope}}
-% \cleanermid{x}{raise}: front view of the central drive and supply module, fixed to the rack frame
-\newcommand{\cleanermid}[2]{%
-  \begin{scope}[shift={(#1,#2)}]
-    \draw[fill=gray!12] (-95,12) rectangle (95,140);
-    \draw[fill=gray!65] (-91,0) rectangle (-77,40) (77,0) rectangle (91,40);
-    \draw[pattern=north east lines] (-70,0) rectangle (70,4);
-    \draw[fill=gray!30] (-73,4) rectangle (73,12);
-    \draw[densely dashed] (-62,12) .. controls (-50,58) and (-16,52) .. (-14,84) -- (-14,100)
-                          (62,12) .. controls (50,58) and (16,52) .. (14,84) -- (14,100);
-    \draw[fill=gray!45] (-30,100) -- (-22,124) -- (22,124) -- (30,100) -- cycle;
-    \draw[fill=black!75] (-80,140) rectangle (80,150);
-  \end{scope}}
-% \cleanergear{x}{y}{angle}: top view of a spur gear centred at (x,y) with one tooth pointing at `angle'
-\newcommand{\cleanergear}[3]{%
-  \begin{scope}[shift={(#1,#2)}]
-    \draw[fill=gray!50] ({#3-9.5}:19)
-      \foreach \k in {0,...,11}{ -- ({#3+30*\k-9.5}:19) -- ({#3+30*\k-3.5}:28) -- ({#3+30*\k+3.5}:28) -- ({#3+30*\k+9.5}:19)} -- cycle;
-    \draw[fill=white] (0,0) circle (7);
-    \fill (0,0) circle (2);
-  \end{scope}}
-% \cleanerrack{half-length}{first tooth}{last tooth}{tooth offset}{side}: top view of a side rail with its rack.
-%   side = 1: rail on the +y side, teeth pointing down; side = -1: rail on the -y side, teeth pointing up
-\newcommand{\cleanerrack}[5]{%
-  \draw[fill=gray!25] (-#1,{65*(#5)}) -- (-#1,{53*(#5)})
-    \foreach \k in {#2,...,#3}{
-      -- ({(\k+#4)*12.566-4.72},{53*(#5)}) -- ({(\k+#4)*12.566-1.44},{44*(#5)})
-      -- ({(\k+#4)*12.566+1.44},{44*(#5)}) -- ({(\k+#4)*12.566+4.72},{53*(#5)})}
-    -- (#1,{53*(#5)}) -- (#1,{65*(#5)}) -- cycle;}
 
 % Formatting
 \setstretch{1.15}
@@ -200,13 +171,105 @@ The primary contribution of this project will be an integrated, testable electro
 To address the requirement of navigating raised window frames on flat glass façades, three distinct conceptual architectures will be developed and evaluated.
 
 \subsubsection{Concept 1: Articulated Three-Module Crawler}
-The first concept will feature a serial kinematic chain consisting of three independent vacuum/drive modules connected by two linear-actuated joints. During standard cleaning, all three modules will share the traction load and steer via differential drive. When a raised frame is detected, the leading module will lift and advance across the obstacle while the remaining two modules maintain adhesion. While this design offers high fault tolerance through physical redundancy, it requires complex joint synchronization, multi-chamber pressure balancing, and heavy reliance on coordinated control algorithms to prevent dynamic instability during transition.
+The first concept will be a three-module crawler based on the Mantis-mini glass fa\c{c}ade robot of Parween et al.~[5]. Three suction modules will hang in a row from a common upper frame. Each module will have an impeller-evacuated suction chamber, a differential wheel drive, a cleaning brush, and a linear-actuated lifting mechanism, and will be free to rotate on its holder bearing. Two changes will be made to the reference design. First, the fixed support frames will be replaced by a rack-and-pinion frame: the two end modules will each travel along the frame on their own pinion, each pinion engaging one of the two racks, while still rotating on their holder bearings, so that each cleaning module can be positioned in two dimensions. Second, the centre module will be fixed to the frame and will carry the battery pack, the water tank, and the pump, supplying power and water to all three modules.
+
+During standard cleaning, all three modules will share the traction load and steer via differential drive. When a raised frame is detected, the modules will be lifted and carried across the obstacle one at a time while the remaining two modules maintain adhesion. While this design offers high fault tolerance through physical redundancy, it requires complex joint synchronization, multi-chamber pressure balancing, and heavy reliance on coordinated control algorithms to prevent dynamic instability during transition.
 
 \begin{figure}[H]
     \centering
-    % Uncomment and upload your image: \includegraphics[width=0.5\textwidth]{concept1.jpg}
-    \fbox{\parbox[c][4cm][c]{0.6\textwidth}{\centering [Insert Free-hand Sketch of Concept 1 Here]}}
-    \caption{Free-hand schematic of Concept 1: Articulated three-module crawler.}
+    % To show the original free-hand photo instead, upload it as "concept1.jpg" and replace the two drawings below with:
+    % \includegraphics[width=0.8\textwidth]{concept1.jpg}
+    \begin{tikzpicture}[x=0.0175cm, y=0.0175cm, >={Stealth[length=1.6mm]}, font=\scriptsize,
+        teeth/.style={decorate, decoration={zigzag, segment length=1.5mm, amplitude=0.45mm}},
+        lead/.style={draw=black!65, line width=0.3pt, {Circle[length=1.6pt, width=1.6pt]}-}]
+      % rack frame with the two internal racks
+      \draw[thick, fill=gray!20] (-430,-65) rectangle (430,65);
+      \fill[white] (-420,-48) rectangle (420,48);
+      \draw (-420,-48) -- (-420,48) (420,-48) -- (420,48);
+      \draw[teeth] (-420,48) -- (420,48);
+      \draw[teeth] (-420,-48) -- (420,-48);
+      % supply pods of the centre module
+      \draw[fill=orange!20] (-75,70) rectangle (75,112);
+      \node at (0,91) {Battery + BMS};
+      \draw[fill=blue!12] (-75,-112) rectangle (75,-70);
+      \node at (0,-91) {Tank + pump};
+      % cross-members of the fixed bridge
+      \draw[fill=gray!45] (-64,-65) rectangle (-56,65) (56,-65) rectangle (64,65);
+      % steerable holder of the centre module
+      \fill[gray!22] (0,0) circle (43);
+      \draw (0,0) circle (43) (0,0) circle (33);
+      \draw[gray] (0,-33) -- (0,33);
+      \foreach \a in {25,115,205,295} \draw[->] (\a:38) arc (\a:\a+40:38);
+      % end modules: pinion ring, drive gear and carriage
+      \foreach \cx/\cy/\sg in {-270/5/1, 270/-5/-1}{
+        \fill[gray!22] (\cx,\cy) circle (45);
+        \draw[teeth] (\cx,\cy) circle (45);
+        \draw (\cx,\cy) circle (33);
+        \draw[gray] (\cx-33,\cy) -- (\cx+33,\cy) (\cx,\cy-33) -- (\cx,\cy+33);
+        \fill[gray!65] (\cx+\sg*58.5,\cy) circle (13.5);
+        \draw[decorate, decoration={zigzag, segment length=1mm, amplitude=0.3mm}] (\cx+\sg*58.5,\cy) circle (13.5);
+        \draw[fill=gray!50, fill opacity=0.4, rounded corners=1pt] (\cx+\sg*-30,\cy-16) rectangle (\cx+\sg*78,\cy+16);
+      }
+      % linear guides and fixed bridge
+      \draw[fill=white] (-420,1) rectangle (-60,9);
+      \draw[fill=white] (60,-9) rectangle (420,-1);
+      \draw[fill=black!75] (-60,-9) rectangle (60,9);
+      \foreach \cx/\cy in {-270/5, 0/0, 270/-5}{
+        \draw[fill=white] (\cx,\cy) circle (9);
+        \draw (\cx,\cy) circle (4.5);
+      }
+      % drag chains
+      \draw[densely dashed, line width=0.8pt, blue!50!black] (-56,-30) -- (-200,-30) -- (-200,-11);
+      \draw[densely dashed, line width=0.8pt, blue!50!black] (56,30) -- (200,30) -- (200,11);
+      % travel ranges
+      \draw[<->] (-370,-84) -- (-170,-84);
+      \draw[line width=0.3pt] (-370,-70) -- (-370,-90) (-170,-70) -- (-170,-90);
+      \node[below] at (-270,-86) {travel};
+      \draw[<->] (170,84) -- (370,84);
+      \draw[line width=0.3pt] (170,70) -- (170,90) (370,70) -- (370,90);
+      \node[above] at (270,86) {travel};
+      % module names
+      \node[font=\scriptsize\bfseries] at (-270,-135) {Module 1 (traversing)};
+      \node[font=\scriptsize\bfseries] at (0,-135) {Module 2 (fixed supply)};
+      \node[font=\scriptsize\bfseries] at (270,-135) {Module 3 (traversing)};
+      % labels on the module 1 side
+      \draw[lead] (-395,50) -- (-395,90) node[above] {Rack A};
+      \draw[lead] (-305,35) -- (-340,150) node[above, align=center] {Pinion ring};
+      \draw[lead] (-270,5) -- (-262,90) node[above, align=center] {Hollow hub};
+      \draw[lead] (-211.5,5) -- (-165,150) node[above, align=center] {Drive gear and\\traverse motor};
+      \draw[lead] (-120,-30) -- (-135,-150) node[below, align=center] {Drag chain: cables\\and water hose};
+      % labels around the centre and on the module 3 side
+      \draw[lead] (55,7) -- (125,150) node[above, align=center] {Fixed bridge\\(clamps module 2)};
+      \draw[lead] (395,-5) -- (385,150) node[above, align=center] {Linear guide\\(bearing slider)};
+      \draw[lead] (38,-20) -- (135,-150) node[below, align=center] {Steerable holder\\(rotating part)};
+      \draw[lead] (330,-17) -- (330,-98) node[below, align=center] {Carriage};
+      \draw[lead] (400,-50) -- (400,-98) node[below] {Rack B};
+    \end{tikzpicture}
+
+    \par\smallskip{\footnotesize (a) Top view}\par\bigskip
+    \begin{tikzpicture}[x=0.0165cm, y=0.0165cm, >={Stealth[length=1.6mm]}, font=\scriptsize,
+        lead/.style={draw=black!65, line width=0.3pt, {Circle[length=1.6pt, width=1.6pt]}-}]
+      \cleanerglass{-470}{470}
+      \cleanerframe{0}{430}
+      \cleanermodule{-270}{0}{1}
+      \cleanermodule{0}{0}{0}
+      \cleanermodule{270}{0}{-1}
+      \draw[<->] (-340,215) -- (-200,215) node[midway, above] {traverse};
+      \draw[<->] (200,215) -- (340,215) node[midway, above] {traverse};
+      \draw[<->] (-355,20) -- (-355,70) node[midway, left] {lift};
+      \draw[<->] (355,20) -- (355,70) node[midway, right] {lift};
+      \draw[lead] (-120,176) -- (-120,215) node[above] {Linear guide};
+      \draw[lead] (-150,155) -- (-140,120) node[below] {Rack};
+      \draw[lead] (30,168) -- (30,215) node[above] {Fixed bridge};
+      \draw[lead] (72,125) -- (110,105) node[right] {Supply pod};
+      \node[font=\scriptsize\bfseries] at (-270,-28) {Module 1};
+      \node[font=\scriptsize\bfseries] at (0,-28) {Module 2};
+      \node[font=\scriptsize\bfseries] at (270,-28) {Module 3};
+      \node at (-420,-28) {Glass};
+    \end{tikzpicture}
+
+    \par\smallskip{\footnotesize (b) Front view}
+    \caption{Schematic of Concept 1, redrawn from the free-hand sketch: three-module crawler with a rack-and-pinion frame and a fixed centre supply module.}
     \label{fig:concept1}
 \end{figure}
 
@@ -274,504 +337,6 @@ The physical prototype will be constructed using a 24V DC architecture. The syst
     \item \textbf{Control:} A real-time microcontroller for low-level PID loops and an ESP32 module for supervisory telemetry.
 \end{itemize}
 Signal conditioning and power distribution will be strictly isolated from the fluid/wet cleaning module to prevent electrical short circuits.
-
-\newpage
-% --- CHAPTER 4 ---
-\section{Conceptual Design of the Proposed Cleaner}
-
-This chapter describes how the proposed cleaner is intended to work. It is a concept description only: dimensions, loads, and component ratings are not fixed here and will be determined in the detailed design stage. The figures are schematic and are not drawn to scale.
-
-\subsection{Design Basis and Overview}
-The cleaner will be a three-module platform derived from the Mantis-mini glass fa\c{c}ade robot of Parween et al.~[5]. From that reference design it will keep the arrangement of three suction modules in a row, the impeller-evacuated suction chamber, the linear-actuator lifting mechanism, and the principle of crossing a window frame one part at a time while the rest of the robot holds on to the glass. The following changes will be made to the reference design:
-\begin{itemize}
-    \item \textbf{Rack-and-pinion upper frame.} The fixed supporting frames that join the three modules of the reference design will be replaced by a rack-and-pinion traverse frame, referred to below as the rack frame. The two end modules will no longer sit at a fixed spacing; each will be driven along the rack frame by its own gears.
-    \item \textbf{Small end modules without wheels.} The two end modules will not drive the robot. Each will be reduced to a small suction cup, a lifting mechanism, and a cleaning brush, and will act as a moving anchor and cleaning head.
-    \item \textbf{Enlarged central module.} The middle module will be fixed to the rack frame and will be the largest of the three. It will be the only module with wheels, it will have the largest suction chamber and the highest suction pressure, and it will carry the battery, the control electronics, and the water supply for the whole robot.
-    \item \textbf{Long brush bars.} The brush of each end module will be extended into a long bar that runs alongside the central module and past the centre line of the robot, so that the strip of glass occupied by the central module is also cleaned.
-\end{itemize}
-
-Two-dimensional motion over the glass will be obtained by combining two drives. The wheels of the central module will move the whole cleaner in one direction, and the rack-and-pinion drive will provide the motion in the other direction, either by moving an end module along the rack frame or by moving the rack frame and the central module through the two end modules.
-
-The layout will follow the free-hand sketch prepared for this design, which is redrawn with the above changes in Figures~\ref{fig:topview} and~\ref{fig:frontview}. Table~\ref{tab:modules} summarises the role of each module.
-% To show the original free-hand sketch as well, upload the photo and add:
-% \includegraphics[width=0.8\textwidth]{freehand_sketch.jpg}
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[x=0.0162cm, y=0.0162cm, >={Stealth[length=1.6mm]}, font=\scriptsize, line join=round,
-        lead/.style={draw=black!65, line width=0.3pt, {Circle[length=1.6pt, width=1.6pt]}-}]
-      % central module: housing with its two supply compartments
-      \draw[thick, fill=gray!10] (-95,-120) rectangle (95,120);
-      \draw[fill=orange!20] (-91,69) rectangle (91,116);
-      \node[align=center] at (0,92.5) {Battery and\\control unit};
-      \draw[fill=blue!12] (-91,-116) rectangle (91,-69);
-      \node[align=center] at (0,-92.5) {Water tank\\and pump};
-      % main impeller of the central module, seen through the open rack frame
-      \draw[fill=gray!25] (0,0) circle (36);
-      \foreach \a in {0,45,...,315} \draw (\a:9) -- (\a+28:33);
-      \draw[fill=white] (0,0) circle (9);
-      % wheels of the central module (hidden under the housing)
-      \draw[densely dashed] (-91,-20) rectangle (-77,20) (77,-20) rectangle (91,20);
-      % brush arms and brush bars (at glass level)
-      \draw[fill=gray!40] (-156,-133) rectangle (-146,-30);
-      \draw[fill=gray!40] (146,-149) rectangle (156,-30);
-      \draw[fill=teal!35] (-185.8,-139) rectangle (11.2,-127);
-      \draw[fill=teal!35] (-11.2,-155) rectangle (185.8,-143);
-      \draw[densely dashed, gray] (252.7,-155) rectangle (449.7,-143);
-      % suction cups of the end modules (below the rack frame)
-      \foreach \cx in {-150.79,150.79} \draw[fill=gray!22] (\cx-35,-35) rectangle (\cx+35,35);
-      % rack frame: two side rails with inward-facing racks, and two end plates
-      \cleanerrack{453}{-36}{35}{0.5}{1}
-      \cleanerrack{453}{-35}{35}{0}{-1}
-      \draw[fill=gray!25] (-473,-65) rectangle (-453,65) (453,-65) rectangle (473,65);
-      % fixed bridge
-      \draw[fill=black!70] (-66,-65) rectangle (-56,65) (56,-65) rectangle (66,65);
-      % gear pair, guide blocks, carriage and traverse motor of each end module
-      \foreach \cx in {-150.79,150.79}{
-        \cleanergear{\cx}{24}{90}
-        \cleanergear{\cx}{-24}{105}
-        \draw[fill=gray!60] (\cx-40,55) rectangle (\cx+40,63) (\cx-40,-63) rectangle (\cx+40,-55);
-        \draw[line width=0.9pt, rounded corners=1.5pt] (\cx-46,-70) rectangle (\cx+46,70);
-        \draw[fill=gray!75] (\cx,24) circle (10);
-      }
-      % outer position of module 3
-      \draw[densely dashed, gray, rounded corners=1.5pt] (368.7,-70) rectangle (460.7,70);
-      % drag chains
-      \draw[densely dashed, line width=0.8pt, blue!50!black] (-95,80) -- (-204,80) -- (-204,60);
-      \draw[densely dashed, line width=0.8pt, blue!50!black] (95,80) -- (204,80) -- (204,60);
-      % traverse and cleaning-pass directions
-      \draw[<->] (-440,0) -- (-214,0) node[midway, above] {traverse};
-      \draw[<->] (214,0) -- (358,0) node[midway, above] {traverse};
-      \draw[->, line width=0.8pt] (-445,-165) -- (-445,-95);
-      \node[anchor=west, align=left] at (-437,-130) {cleaning\\pass};
-      % labels above
-      \draw[lead] (-432,52) -- (-432,148) node[above] {Rack A};
-      \draw[lead] (-184,59) -- (-310,148) node[above, align=center] {Guide block\\(bearing slider)};
-      \draw[lead] (-61,52) -- (-61,148) node[above] {Fixed bridge};
-      \draw[lead] (84,14) -- (84,148) node[above, align=center] {Drive wheel\\(hidden)};
-      \draw[lead] (175,80) -- (240,148) node[above, align=center] {Drag chain\\(cables, hose)};
-      \draw[lead] (414,70) -- (414,148) node[above, align=center] {Outer position\\of module 3};
-      % labels below, first row
-      \draw[lead] (-164,-38) -- (-330,-195) node[below, align=center] {Gear pair with\\traverse motor};
-      \draw[lead] (-80,-133) -- (-110,-195) node[below, align=center] {Brush bar of\\module 1};
-      \draw[lead] (130,-149) -- (150,-195) node[below, align=center] {Brush bar of\\module 3};
-      \draw[lead] (189,-70) -- (278,-195) node[below] {Carriage};
-      \draw[lead] (432,-52) -- (432,-195) node[below] {Rack B};
-      % labels below, second row
-      \draw[lead] (-151,-100) -- (-215,-252) node[below] {Brush arm};
-      \draw[lead] (3,-141) -- (20,-252) node[below, align=center] {Overlap at the\\centre line};
-      % module names
-      \node[font=\scriptsize\bfseries] at (-320,-318) {Module 1 (cleaning)};
-      \node[font=\scriptsize\bfseries] at (0,-318) {Module 2 (drive and supply)};
-      \node[font=\scriptsize\bfseries] at (320,-318) {Module 3 (cleaning)};
-    \end{tikzpicture}
-    \caption{Top view of the proposed cleaner, redrawn from the free-hand sketch. Both end modules are shown at their inner positions; the dashed outline shows module~3 at its outer position. A cleaning pass is driven by the wheels of module~2. The main impeller of module~2 is seen through the open centre of the rack frame.}
-    \label{fig:topview}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[x=0.016cm, y=0.016cm, >={Stealth[length=1.6mm]}, font=\scriptsize,
-        lead/.style={draw=black!65, line width=0.3pt, {Circle[length=1.6pt, width=1.6pt]}-}]
-      \cleanerglass{-485}{485}
-      \cleanerframe{0}{473}{0}
-      \cleanermid{0}{0}
-      \cleanerend{-150.79}{8}{1}{0}
-      \cleanerend{150.79}{8}{-1}{0}
-      \draw[<->] (-414,252) -- (-162,252) node[midway, above] {traverse of module 1};
-      \draw[<->] (162,252) -- (414,252) node[midway, above] {traverse of module 3};
-      \draw[<->] (-212,22) -- (-212,62) node[midway, left] {lift};
-      \draw[<->] (212,22) -- (212,62) node[midway, right] {lift};
-      \draw[lead] (-320,172) -- (-320,208) node[above] {Rack frame};
-      \draw[lead] (0,145) -- (0,208) node[above] {Fixed bridge};
-      \draw[lead] (300,190) -- (300,208) node[above] {Guide rail};
-      \draw[lead] (60,8) -- (112,-28) node[right] {Brush bars};
-      \node[font=\scriptsize\bfseries] at (-270,-28) {Module 1};
-      \node[font=\scriptsize\bfseries] at (0,-28) {Module 2};
-      \node[font=\scriptsize\bfseries] at (300,-28) {Module 3};
-      \node at (-440,-28) {Glass};
-    \end{tikzpicture}
-    \caption{Front view of the proposed cleaner on the glass, with the brush bars nearest the viewer. Only module~2 has wheels (the dark blocks on each side of its suction chamber).}
-    \label{fig:frontview}
-\end{figure}
-
-\begin{table}[H]
-\centering
-\caption{Role of the three modules}
-\label{tab:modules}
-\renewcommand{\arraystretch}{1.3}
-\begin{tabular}{|p{2.2cm}|>{\raggedright\arraybackslash}p{3.6cm}|>{\raggedright\arraybackslash}p{3.9cm}|>{\raggedright\arraybackslash}p{4.3cm}|}
-\hline
-\textbf{Module} & \textbf{Mounting on the rack frame} & \textbf{Motions} & \textbf{Functions} \\ \hline
-1 (end) & Carriage on guide rails, driven by a gear pair on racks A and B & Traverse along the rack frame; lift & Cleaning; anchoring the robot while module~2 is moved \\ \hline
-2 (centre) & Fixed to the rack frame by the bridge & Driving and turning on its two wheels; raised together with the rack frame & Main adhesion; driving; battery, control, and water supply for the whole robot \\ \hline
-3 (end) & Carriage on guide rails, driven by a gear pair on racks A and B & Traverse along the rack frame; lift & Cleaning; anchoring the robot while module~2 is moved \\ \hline
-\end{tabular}
-\end{table}
-
-\subsection{Rack-and-Pinion Traverse Frame}
-The rack frame will be a long rectangular frame made of two side rails, two end plates, and a fixed bridge at mid-length. Each side rail will carry a straight rack with its teeth facing inward (rack~A and rack~B in Figure~\ref{fig:topview}) and a guide rail on its upper face. Each end module will hang from a carriage that rides on the two guide rails on guide blocks, the ``bearing sliders'' of the sketch, so that the carriage can move only along the rack frame.
-
-Each carriage will carry two identical spur gears side by side across the rack frame (Figure~\ref{fig:gears}). The first gear will mesh with rack~A, the second gear will mesh with rack~B, and the two gears will mesh with each other on the centre line of the rack frame. A geared motor on the carriage will drive the first gear, and the second gear will follow it. When the motor runs, the two gears will turn in opposite directions and each will roll along its own rack, so the carriage will be driven on both side rails at once and will not tend to twist on its guides.
-
-Two gears will be used because a single gear cannot mesh with both racks. The two racks are fixed to each other, while opposite sides of a turning gear move in opposite directions, so a single gear that touched both racks would lock. With two gears turning in opposite directions, the side of each gear that faces its rack moves the correct way, and the gear train fills the whole space between the racks. The single toothed ring drawn for each module in the sketch will therefore be replaced by this gear pair.
-
-For the gears and the racks to fit, the following conditions will be kept:
-\begin{itemize}
-    \item Both gears and both racks will have the same tooth size and tooth form.
-    \item The pitch lines of the two racks will be exactly two gear pitch diameters apart, so that the two pitch circles touch each other and each touches the pitch line of its rack.
-    \item The teeth of rack~B will be set half a tooth pitch along the frame from those of rack~A, so that all three meshes close at the same time.
-    \item One side rail will be adjustable across the frame before it is clamped, so that the working clearance of the teeth can be set at assembly.
-\end{itemize}
-
-The traverse motor will have a self-locking worm gear stage so that the carriage holds its position when the motor is not powered. An encoder on the motor will measure the travel of the carriage, and limit switches at both ends of the travel will provide the reference position.
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[x=0.055cm, y=0.055cm, >={Stealth[length=1.8mm]}, font=\scriptsize, line join=round,
-        lead/.style={draw=black!65, line width=0.3pt, {Circle[length=1.6pt, width=1.6pt]}-}]
-      \path[use as bounding box] (-142,-80) rectangle (142,80);
-      \begin{scope}
-        \clip (-75,-68) rectangle (75,68);
-        \begin{scope}[shift={(-138.23,0)}]
-          \cleanerrack{453}{-36}{35}{0.5}{1}
-          \cleanerrack{453}{-35}{35}{0}{-1}
-          \cleanergear{138.23}{24}{90}
-          \cleanergear{138.23}{-24}{105}
-        \end{scope}
-        % pitch lines and pitch circles
-        \draw[densely dash dot, red!70!black, line width=0.4pt] (-75,48) -- (75,48) (-75,-48) -- (75,-48);
-        \draw[densely dash dot, red!70!black, line width=0.4pt] (0,24) circle (24) (0,-24) circle (24);
-        % guide blocks and carriage
-        \draw[fill=gray!60, fill opacity=0.6] (-40,55) rectangle (40,63) (-40,-63) rectangle (40,-55);
-        \draw[line width=0.9pt, rounded corners=2pt] (-46,-66.5) rectangle (46,66.5);
-      \end{scope}
-      \draw (-75,-68) rectangle (75,68);
-      % rotation and travel
-      \draw[->, line width=0.7pt] (0,24) +(200:13) arc (200:340:13);
-      \draw[->, line width=0.7pt] (0,-24) +(160:13) arc (160:20:13);
-      \draw[->, line width=0.9pt] (52,0) -- (72,0);
-      \node[above] at (61,1) {travel};
-      % labels on the left
-      \draw[lead] (-60,58) -- (-80,58) node[left] {Side rail with rack A};
-      \draw[lead] (-17,41) -- (-80,36) node[left, align=right] {Driven gear\\(on the traverse motor)};
-      \draw[lead] (-66,48) -- (-80,14) node[left, align=right] {Pitch line of the rack};
-      \draw[lead] (-17,-41) -- (-80,-30) node[left] {Follower gear};
-      \draw[lead] (-60,-58) -- (-80,-58) node[left] {Side rail with rack B};
-      % labels on the right
-      \draw[lead] (30,59) -- (80,58) node[right] {Guide block};
-      \draw[lead] (20.8,36) -- (80,36) node[right] {Pitch circle};
-      \draw[lead] (2,1) -- (80,14) node[right, align=left] {Mesh between the\\two gears};
-      \draw[lead] (2,-48) -- (80,-30) node[right, align=left] {Mesh between\\gear and rack};
-      \draw[lead] (46,-50) -- (80,-58) node[right] {Carriage};
-    \end{tikzpicture}
-    \caption{Gear pair of one carriage, seen from above. The driven gear rolls on rack~A and the follower gear on rack~B; the two gears turn in opposite directions and together fill the space between the racks.}
-    \label{fig:gears}
-\end{figure}
-
-\subsection{End Cleaning Modules (Modules 1 and 3)}
-The two end modules will be identical apart from being mirror images of each other. Each will consist of the following parts (Figure~\ref{fig:endmodule}):
-\begin{itemize}
-    \item \textbf{Suction cup.} A small suction chamber with a soft sealing lip will be evacuated by a small impeller mounted on top of it. The cup will be used only to anchor the end module to the glass; it will not have to slide while it is holding.
-    \item \textbf{Lifting mechanism.} Two miniature linear actuators placed diagonally, as in the reference design, will connect the cup to the carriage and move it towards or away from the glass.
-    \item \textbf{Brush bar.} A long brush bar will be carried on an arm fixed to the cup. A row of spray nozzles on the bar will wet the glass ahead of the bristles with water supplied from module~2.
-    \item \textbf{Carriage.} The carriage with its gear pair and traverse motor, described in the previous section, will carry the module along the rack frame.
-\end{itemize}
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[x=0.026cm, y=0.026cm, >={Stealth[length=1.6mm]}, font=\scriptsize,
-        lead/.style={draw=black!65, line width=0.3pt, {Circle[length=1.6pt, width=1.6pt]}-}]
-      \cleanerglass{-165}{130}
-      % outline of module 2 behind the section
-      \draw[densely dashed, gray] (-120,12) rectangle (120,140);
-      % side rails with racks, guide rails and guide blocks
-      \foreach \s in {1,-1}{
-        \draw[fill=gray!10] (\s*53,150) rectangle (\s*65,188);
-        \draw[fill=gray!35] (\s*44,150) rectangle (\s*53,162);
-        \draw[fill=white] (\s*55,188) rectangle (\s*63,192);
-        \draw[fill=gray!60] (\s*52,192) rectangle (\s*66,200);
-      }
-      % carriage hanger, gear pair, shafts, carriage plate and motor
-      \draw[fill=white] (-8,146) rectangle (8,200);
-      \draw[fill=gray!50] (-48,151) rectangle (0,161) (0,151) rectangle (48,161);
-      \draw[line width=1pt] (-24,161) -- (-24,200) (24,161) -- (24,200);
-      \draw[fill=gray!30] (-70,200) rectangle (70,206);
-      \draw[fill=gray!70] (12,206) rectangle (36,232);
-      \draw[fill=gray!30] (-42,140) rectangle (42,146);
-      % lift actuators
-      \draw[line width=0.9pt] (-20,80) -- (-20,140) (20,80) -- (20,140);
-      % suction cup
-      \draw[pattern=north east lines] (-35,0) rectangle (35,4);
-      \draw[fill=gray!12] (-35,4) rectangle (35,46);
-      \draw[densely dashed] (-27,4) .. controls (-22,24) and (-6,22) .. (-5,34) -- (-5,46)
-                            (27,4) .. controls (22,24) and (6,22) .. (5,34) -- (5,46);
-      \draw[fill=gray!45] (-12,46) -- (-8,57) -- (8,57) -- (12,46) -- cycle;
-      \draw[fill=gray!70] (-24,46) rectangle (-16,80) (16,46) rectangle (24,80);
-      % brush arm and brush bars (seen end-on)
-      \draw[fill=gray!40] (-133,18) rectangle (-35,24);
-      \draw[fill=teal!35] (-139,0) rectangle (-127,10);
-      \draw[fill=teal!60!black] (-139,10) rectangle (-127,18);
-      \draw[densely dashed, gray] (-155,0) rectangle (-143,18);
-      % labels on the left
-      \draw[lead] (-30,156) -- (-180,196) node[left] {Gear pair};
-      \draw[lead] (-49,153) -- (-180,172) node[left] {Rack};
-      \draw[lead] (-20,118) -- (-180,148) node[left] {Lift actuator};
-      \draw[lead] (-9,52) -- (-180,124) node[left] {Small impeller};
-      \draw[lead] (-30,38) -- (-180,100) node[left] {Suction cup};
-      \draw[lead] (-90,21) -- (-180,76) node[left] {Brush arm};
-      \draw[lead] (-136,14) -- (-180,52) node[left] {Brush bar};
-      \draw[lead] (-152,9) -- (-180,28) node[left, align=right] {Brush bar of the\\other end module};
-      % labels on the right
-      \draw[lead] (30,222) -- (145,226) node[right] {Traverse motor};
-      \draw[lead] (62,203) -- (145,202) node[right] {Carriage};
-      \draw[lead] (64,196) -- (145,178) node[right] {Guide block and guide rail};
-      \draw[lead] (61,170) -- (145,154) node[right] {Side rail of the rack frame};
-      \draw[lead] (120,100) -- (145,100) node[right, align=left] {Outline of module 2\\(behind the section)};
-      \draw[lead] (30,2) -- (145,46) node[right] {Sealing lip};
-    \end{tikzpicture}
-    \caption{Cross-section at an end cleaning module (modules 1 and 3), looking along the rack frame.}
-    \label{fig:endmodule}
-\end{figure}
-
-The end modules will have no wheels. They will be moved along the rack frame by the rack-and-pinion drive and over the glass by the wheels of module~2, so they will need neither drive motors of their own nor the rotating holder that the reference design uses to steer each module. Leaving these parts out allows each end module to be made much smaller and lighter than module~2.
-
-The bristles of the brush will reach slightly below the sealing lip of the cup. With this arrangement the two lift actuators alone will give each end module four working positions, shown in Figure~\ref{fig:positions}:
-\begin{enumerate}
-    \item \textbf{Raised.} The cup and the brush are clear of the glass and of any window frame. This position is used when the module is carried over a window frame and when the robot turns.
-    \item \textbf{Cleaning.} The bristles touch the glass while the sealing lip stays just clear of it. The module can then slide freely with the robot while its brush cleans.
-    \item \textbf{Anchored.} The cup is pressed on the glass and its impeller is running, so the module holds on to the glass.
-    \item \textbf{Frame raised.} With both end modules anchored, their actuators extend further and push the rack frame away from the glass. Module~2, which is fixed to the rack frame, is lifted off the glass with it.
-\end{enumerate}
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[x=0.021cm, y=0.021cm, >={Stealth[length=1.6mm]}, font=\scriptsize]
-      \renewcommand{\cleanerbarlen}{70}
-      \foreach \px/\lift/\rise/\name/\note in {
-          0/35/0/1. Raised/cup and brush clear,
-          175/8/0/2. Cleaning/brush on the glass,
-          350/0/0/3. Anchored/cup holding,
-          525/0/35/4. Frame raised/rack frame pushed up}{
-        \begin{scope}[shift={(\px,0)}]
-          \cleanerglass{-60}{95}
-          \cleanerframe{17}{72}{\rise}
-          \cleanerend{0}{\lift}{1}{\rise}
-          \node[font=\scriptsize\bfseries, anchor=base] at (17,-30) {\name};
-          \node[anchor=base] at (17,-54) {\note};
-        \end{scope}}
-    \end{tikzpicture}
-    \caption{The four working positions of an end module (only part of the brush bar is shown).}
-    \label{fig:positions}
-\end{figure}
-
-\subsection{Central Drive and Supply Module (Module 2)}
-Module~2 will be fixed to the middle of the rack frame by the bridge; it is the module marked as fixed in the sketch. It will be considerably larger than the end modules, so that it has room for the main suction chamber, the drive, and all the supplies of the robot (Figure~\ref{fig:centralmodule}). It will contain:
-\begin{itemize}
-    \item \textbf{Main suction chamber and impeller.} Module~2 will have the largest suction chamber and the most powerful impeller of the three modules, and it will work at the highest suction pressure. It will provide the main adhesion of the robot and will hold the whole cleaner on the glass during cleaning. A pressure sensor in the chamber will give the feedback needed to keep the suction pressure at its set value. The impeller will exhaust upward through the open centre of the rack frame.
-    \item \textbf{Drive wheels.} Two wheels, one on each side of the suction chamber, will each be driven by a geared motor with an encoder. Running both wheels at the same speed will move the robot straight along a cleaning pass; running them at different speeds will steer the robot or turn it on the spot.
-    \item \textbf{Battery and control compartment.} A compartment on one side of the rack frame will hold the battery pack with its battery management system, the controller, and the motor drivers.
-    \item \textbf{Water compartment.} A compartment on the opposite side of the rack frame will hold the water tank, the pump, and the valves.
-\end{itemize}
-
-This arrangement places the heaviest items at the centre of the robot, directly over the module that provides the main adhesion, and keeps them close to the glass. The battery and the water tank will sit on opposite sides of the rack frame so that their weights balance each other, and so that the electrical parts are separated from the water by the full width of the frame. Both compartments will be sealed against splashing.
-
-Module~2 will have no lifting mechanism of its own. When it has to leave the glass, the two end modules will raise it together with the rack frame, as described above. This keeps the heavy central module rigidly attached to the frame and avoids a second set of lift actuators.
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[x=0.026cm, y=0.026cm, >={Stealth[length=1.6mm]}, font=\scriptsize,
-        lead/.style={draw=black!65, line width=0.3pt, {Circle[length=1.6pt, width=1.6pt]}-}]
-      \cleanerglass{-165}{130}
-      % side rails with racks and guide rails
-      \foreach \s in {1,-1}{
-        \draw[fill=gray!10] (\s*53,150) rectangle (\s*65,188);
-        \draw[fill=gray!35] (\s*44,150) rectangle (\s*53,162);
-        \draw[fill=white] (\s*55,188) rectangle (\s*63,192);
-      }
-      % housing and fixed bridge
-      \draw[fill=gray!10] (-120,12) rectangle (120,140);
-      \draw[fill=black!75] (-70,140) rectangle (70,150);
-      % compartments
-      \draw[fill=blue!12] (-116,42) rectangle (-70,136);
-      \node[align=center] at (-93,96) {Water\\tank};
-      \draw[fill=blue!25] (-116,16) rectangle (-70,38);
-      \node at (-93,27) {Pump};
-      \draw[fill=orange!25] (70,16) rectangle (116,74);
-      \node at (93,52) {Battery};
-      \draw[fill=yellow!25] (70,78) rectangle (116,136);
-      \node[align=center] at (93,107) {Control\\unit};
-      % main suction chamber and impeller
-      \draw[pattern=north east lines] (-60,0) rectangle (60,4);
-      \draw[fill=gray!30] (-64,4) rectangle (64,12);
-      \draw[densely dashed] (-56,12) .. controls (-46,58) and (-16,52) .. (-14,84) -- (-14,100)
-                            (56,12) .. controls (46,58) and (16,52) .. (14,84) -- (14,100);
-      \draw[fill=gray!45] (-30,100) -- (-22,124) -- (22,124) -- (30,100) -- cycle;
-      \draw[->] (0,128) -- (0,186);
-      % drive wheel (beside the chamber)
-      \draw[densely dashed, fill=gray!30, fill opacity=0.5] (0,20) circle (20);
-      \fill (0,20) circle (2);
-      % brush bars passing alongside the module
-      \foreach \u in {-139,-155}{
-        \draw[fill=teal!35] (\u,0) rectangle (\u+12,10);
-        \draw[fill=teal!60!black] (\u,10) rectangle (\u+12,18);
-      }
-      % labels on the left
-      \draw[lead] (-60,174) -- (-180,180) node[left] {Rack frame};
-      \draw[lead] (-60,145) -- (-180,156) node[left] {Fixed bridge};
-      \draw[lead] (-24,116) -- (-180,130) node[left] {Main impeller};
-      \draw[lead] (-36,54) -- (-180,66) node[left] {Main suction chamber};
-      \draw[lead] (-141,14) -- (-180,40) node[left, align=right] {Brush bars of\\modules 1 and 3};
-      % labels on the right
-      \draw[lead] (0,178) -- (145,196) node[right] {Impeller exhaust};
-      \draw[lead] (120,120) -- (145,130) node[right, align=left] {Housing of module 2};
-      \draw[lead] (16,30) -- (145,30) node[right, align=left] {Drive wheel (one on each\\side of the chamber)};
-      \draw[lead] (58,2) -- (145,-2) node[right] {Sealing lip};
-    \end{tikzpicture}
-    \caption{Cross-section at the central drive and supply module (module 2), looking along the rack frame.}
-    \label{fig:centralmodule}
-\end{figure}
-
-\subsection{Brush Arrangement and Coverage}
-A brush cannot be placed under module~2 itself, because its suction chamber has to seal against the glass. The strip of glass that module~2 occupies will instead be cleaned by the brush bars of the two end modules, which will be made long enough to reach across it.
-
-Each brush bar will start at the outer edge of its own end module, run alongside module~2, and end just past the centre line of the robot (Figure~\ref{fig:topview}). Both bars will lie on the same side of module~2, the side that trails during a cleaning pass, so that they wipe the glass after the wheels of module~2 have rolled over it. The two bars will be set one behind the other, so that they overlap at the centre line without touching. With both end modules at their inner positions, the two bars together will cover the full width of the robot in a single pass, including the strip under module~2.
-
-The rack-and-pinion drive will be used to extend this reach. Moving an end module outward will carry its brush bar to the edge of the pane, right up to a window frame that module~2 itself cannot approach, and moving it back and forth will scrub a heavily soiled strip. Because the bars are fixed to the end modules, they will be raised and lowered with them and will be lifted clear of a window frame during crossing.
-
-\subsection{Water and Power Supply}
-Figure~\ref{fig:supply} shows how module~2 will supply the whole cleaner.
-
-\textbf{Water supply.} The tank, fitted with a level sensor, will feed the pump through a filter. The pump will deliver to two valves, one for each brush bar, so that only the bar that is cleaning is supplied. Each bar will carry a row of nozzles that wets the glass directly ahead of its bristles.
-
-\textbf{Battery supply.} The battery pack, with its battery management system, will feed a single power bus through a fuse, a main switch, and an emergency stop. The main impeller of module~2, which is the largest load, will be driven directly from this bus. Voltage converters will supply the motor drivers, the pump, and the valves at a lower voltage, and the controller and sensors at logic voltage.
-
-\textbf{Connections to the end modules.} The power and signal cables and the water hose of each end module will run from module~2 to its carriage in a drag chain along the rack frame, so that they follow the carriage over its whole travel without being pulled or kinked.
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[>={Stealth[length=2mm]}, font=\scriptsize,
-        blk/.style={draw, rounded corners=2pt, align=center, minimum height=0.95cm, inner sep=3pt},
-        pw/.style={draw=red!65!black, line width=0.9pt},
-        wt/.style={draw=blue!65!black, line width=0.9pt},
-        sg/.style={draw=black!70, densely dashed, line width=0.5pt}]
-      % power chain
-      \node[blk, fill=orange!20, text width=2.5cm] (bat) at (0,0) {Battery pack with\\management\\system};
-      \node[blk, text width=2.1cm] (prot) at (3.3,0) {Fuse, main switch, emergency stop};
-      \node[blk, text width=1.6cm] (c5) at (7.0,0) {Converter\\(logic)};
-      \node[blk, text width=1.6cm] (c12) at (7.0,-1.6) {Converter\\(drives)};
-      \node[blk, fill=gray!12, text width=4.3cm] (imp) at (11.4,1.6) {Impeller driver and main impeller of module 2};
-      \node[blk, fill=gray!12, text width=4.3cm] (ctl) at (11.4,0) {Controller and sensors};
-      \node[blk, fill=gray!12, text width=4.3cm] (drv) at (11.4,-1.6) {Drivers: wheel and traverse\\motors, lift actuators,\\end-module impellers};
-      % water chain
-      \node[blk, fill=blue!12, text width=2.5cm] (tank) at (0,-3.7) {Water tank with level sensor};
-      \node[blk, fill=blue!12, text width=2.1cm] (pump) at (3.3,-3.7) {Filter and pump};
-      \node[blk, fill=blue!12, text width=1.6cm] (man) at (7.0,-3.7) {Valves};
-      \node[blk, fill=blue!12, text width=4.3cm] (noz) at (11.4,-3.7) {Spray nozzles on the brush bars of modules 1 and 3};
-      % power bus
-      \draw[pw, ->] (bat) -- (prot);
-      \draw[pw] (prot.east) -- (5.2,0);
-      \draw[pw] (5.2,1.6) -- (5.2,-1.6);
-      \node[rotate=90, anchor=south] at (5.15,0.8) {power bus};
-      \draw[pw, ->] (5.2,1.6) -- (imp.west);
-      \draw[pw, ->] (5.2,0) -- (c5.west);
-      \draw[pw, ->] (5.2,-1.6) -- (c12.west);
-      \draw[pw, ->] (c5) -- (ctl);
-      \draw[pw, ->] (c12) -- (drv);
-      % drives converter to pump and valves
-      \draw[pw, ->] (drv.south) -- ++(0,-0.45) -| (pump.north);
-      \draw[pw, ->] (7.0,-2.6) -- (man.north);
-      % water
-      \draw[wt, ->] (tank) -- (pump);
-      \draw[wt, ->] (pump) -- (man);
-      \draw[wt, ->] (man) -- (noz);
-      % control signals
-      \draw[sg, ->] (ctl.north) -- (imp.south);
-      \draw[sg, ->] (ctl.south) -- (drv.north);
-      % legend
-      \draw[pw] (0.2,-4.9) -- (1.0,-4.9) node[right, black] {electrical power};
-      \draw[wt] (4.2,-4.9) -- (5.0,-4.9) node[right, black] {water};
-      \draw[sg] (7.0,-4.9) -- (7.8,-4.9) node[right, black] {control signals};
-    \end{tikzpicture}
-    \caption{Battery and water supply from the central module.}
-    \label{fig:supply}
-\end{figure}
-
-\subsection{Operation of the Cleaner}
-The cleaner will work in four ways:
-\begin{enumerate}
-    \item \textbf{Cleaning pass.} Module~2 will hold the robot on the glass and drive it on its wheels. The two end modules will be in the cleaning position, with their brush bars trailing behind module~2 and their nozzles spraying. The robot will clean a strip as wide as the two brush bars together.
-    \item \textbf{Side step.} To move to the next strip, the two end modules will be anchored, the rack frame will be raised so that module~2 leaves the glass, and both traverse motors will run together so that the rack frame and module~2 slide sideways through the anchored end modules. Module~2 will then be lowered and will take hold again, and the end modules will be released and returned to their inner positions. The wheels will give the motion along the strip and the rack-and-pinion drive the motion across it, which together cover the pane in two directions.
-    \item \textbf{Turning.} With the end modules raised, module~2 will turn the whole robot on the spot by running its two wheels in opposite directions. This will be used to line the rack frame up with the window frame that is to be crossed.
-    \item \textbf{Frame crossing.} A window frame will be crossed with the rack frame at right angles to it, as shown in Figure~\ref{fig:crossing}. The leading end module will be raised, carried over the window frame by its gear pair, and anchored on the next pane. With both end modules anchored, the rack frame will be raised and module~2 will be carried over the window frame by both gear pairs. Finally, the trailing end module will be raised and drawn over the window frame in the same way.
-\end{enumerate}
-
-In every one of these steps the robot will be held either by module~2 or by both end modules together. A module will be released only after the pressure sensors of the modules that take over have confirmed that they are holding.
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[x=0.0105cm, y=0.0105cm, >={Stealth[length=1.6mm]}, font=\scriptsize]
-      % (a)
-      \begin{scope}[shift={(0,0)}]
-        \cleanerglass{-700}{750}
-        \draw[fill=gray!65] (0,0) rectangle (40,25);
-        \cleanerframe{-200.8}{473}{0}
-        \cleanermid{-200.8}{0}
-        \cleanerend{-351.6}{0}{1}{0}
-        \cleanerend{-50}{0}{-1}{0}
-        \node[anchor=west] at (-700,-34) {(a) The cleaner on pane A, with module 3 close to the window frame.};
-        \node at (-640,35) {Pane A};
-        \node at (690,35) {Pane B};
-        \node[anchor=west] at (48,22) {Window frame};
-      \end{scope}
-      % (b)
-      \begin{scope}[shift={(0,-322)}]
-        \cleanerglass{-700}{750}
-        \draw[fill=gray!65] (0,0) rectangle (40,25);
-        \cleanerframe{-200.8}{473}{0}
-        \cleanermid{-200.8}{0}
-        \cleanerend{-351.6}{0}{1}{0}
-        \cleanerend{213.9}{35}{-1}{0}
-        \draw[->, thick] (285,219) -- (395,219);
-        \node[anchor=west] at (-700,-34) {(b) Module 2 holds; module 3 is raised and carried over the window frame by its gear pair.};
-      \end{scope}
-      % (c)
-      \begin{scope}[shift={(0,-644)}]
-        \cleanerglass{-700}{750}
-        \draw[fill=gray!65] (0,0) rectangle (40,25);
-        \cleanerframe{150}{473}{35}
-        \cleanermid{150}{35}
-        \cleanerend{-264.7}{0}{1}{35}
-        \cleanerend{300.8}{0}{-1}{35}
-        \draw[->, thick] (640,205) -- (745,205);
-        \node[anchor=west] at (-700,-34) {(c) Modules 1 and 3 hold; the rack frame is raised and module 2 is carried over the window frame.};
-      \end{scope}
-      % (d)
-      \begin{scope}[shift={(0,-966)}]
-        \cleanerglass{-700}{750}
-        \draw[fill=gray!65] (0,0) rectangle (40,25);
-        \cleanerframe{245}{473}{0}
-        \cleanermid{245}{0}
-        \cleanerend{94.2}{35}{1}{0}
-        \cleanerend{445}{0}{-1}{0}
-        \draw[->, thick] (150,219) -- (260,219);
-        \node[anchor=west] at (-700,-34) {(d) Module 2 holds; module 1 is raised and drawn over the window frame.};
-      \end{scope}
-    \end{tikzpicture}
-    \caption{Frame-crossing sequence. Between the stages shown, the cleaner moves up in side steps of the kind described above to bring the next module to the window frame.}
-    \label{fig:crossing}
-\end{figure}
-
-\subsection{Points to be Settled in the Detailed Design}
-The concept leaves the following points open. They will be settled by analysis, by the SolidWorks model, and by tests on the glass rig:
-\begin{itemize}
-    \item \textbf{Holding capacity of the end modules.} Making the end modules smaller reduces their suction area, yet the two of them together must hold the whole cleaner whenever module~2 is off the glass. The smallest acceptable size of the end cups will be found from the adhesion analysis and confirmed by test.
-    \item \textbf{Suction pressure of module~2.} Module~2 will work at the highest suction pressure, but a higher pressure also increases the friction of its sealing lip, which the wheels have to overcome. The working pressure will be chosen to hold the robot safely while still allowing the wheels to drive it.
-    \item \textbf{Length of the rack frame.} For module~2 to be carried over a window frame in one move, the travel of each end module must be longer than module~2 and the window frame together. A larger module~2 therefore needs a longer rack frame.
-    \item \textbf{Stiffness of the brush bars.} A long bar held on a single arm must still press evenly on the glass along its whole length.
-    \item \textbf{Alignment of the racks.} The two side rails must stay parallel along the whole frame for the gear pairs to run freely without excessive clearance.
-    \item \textbf{Battery and water capacity.} The size of the battery pack and of the water tank will be chosen from the required working time and cleaned area, within the weight that the suction modules can hold.
-\end{itemize}
 
 \newpage
 % --- REFERENCES ---
